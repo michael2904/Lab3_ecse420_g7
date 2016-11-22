@@ -18,13 +18,19 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	}
 	if(idx % 4 != 3){
 		if (f < 127){
+			if(idx <3968060 && idx>3968000 ){
+				printf("thread %d in block %d: idx = %d was %d\n", threadIdx.x, blockIdx.x, idx,f);
+			}
 			f = 127;
 			//int cnt = atomicAdd(&counter, 1);
 			//printf("There was %d bytes changed to 127\n",cnt);
+			if(idx <3968060 && idx>3968000 ){
+				printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,f);
+			}
 		}
 	}
 	d_out[idx] = f;
-	if(idx <3968050 && idx>3968030 ){
+	if(idx <3968060 && idx>3968000 ){
 		printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,d_out[idx]);
 	}
 }
