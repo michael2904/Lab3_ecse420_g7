@@ -7,12 +7,18 @@
 
 
 __global__ void rectify(float * d_out, float * d_in){
-	int idx = threadIdx.x;
+	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	float f = d_in[idx];
+	if(idx % 1000 == 0){
+		printf("thread %d in block %d: idx = %d and f is %f\n", threadIdx.x, blockIdx.x, idx,f);
+	}
 	if(idx % 4 == 3){
 		f = f < 127 ? 127 : f; // R
 	}
 	d_out[idx] = f;
+	if(idx % 1000 == 0){
+		printf("thread %d in block %d: idx = %d and became %f\n", threadIdx.x, blockIdx.x, idx,d_out[idx]);
+	}
 }
 
 
