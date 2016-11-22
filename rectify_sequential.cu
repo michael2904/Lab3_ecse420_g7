@@ -36,7 +36,10 @@ int process(char* input_filename, char* output_filename)
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 		return error;
 	}
-
+	int i;
+	for(i = 0; i<1000;i++){
+		printf("This is image at %d : %d\n",i,image[i]);
+	}
 	const int size = width * height * 4 * sizeof(unsigned char);
 	new_image = (unsigned char *)malloc(size);
 
@@ -72,7 +75,10 @@ int process(char* input_filename, char* output_filename)
 
 	cudaFree(d_in);
 	cudaFree(d_out);
-
+	int j;
+	for(j = 0; j<1000;j++){
+		printf("This was image at %d: %d and now it is: %d\n",j,image[j],new_image[j]);
+	}
 	lodepng_encode32_file(output_filename, new_image, width, height);
 
 	free(image);
