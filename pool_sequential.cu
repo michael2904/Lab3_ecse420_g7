@@ -3,47 +3,115 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void process(char* input_filename, char* output_filename)
-{
-  unsigned error;
-  unsigned char *image, *new_image;
-  unsigned width, height;
+//Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-  error = lodepng_decode32_file(&image, &width, &height, input_filename);
-  if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
-  new_image = malloc(width * height * sizeof(unsigned char) * 2);
+__global__ void rectify(unsigned char * d_out, unsigned char * d_in){
+	int idx = blockDim.x*blockIdx.x + threadIdx.x;
+	int index = threadIdx.x;
+	int width = blockDim.x / 2;
+	int i = index /width;
+	int j = (index / 4) % (width/4);
+	int k = index % 4;
 
-  // pool image
-  unsigned char max_val;
-  int i,j,k;
-  for (i = 0; i < height; i+=2) {
-    for (j = 0; j < width; j+=2) {
-      for (k = 0; k < 3; k++) {
-        // k=0 -> R, k=1 -> G, k=2 -> B
-        max_val = 0;
-        if (image[4*width*i + 4*j + k] > max_val) max_val = image[4*width*i + 4*j + k];
-        if (image[4*width*i + 4*(j+1) + k] > max_val) max_val = image[4*width*i + 4*(j+1) + k];
-        if (image[4*width*(i+1) + 4*j + k] > max_val) max_val = image[4*width*(i+1) + 4*j + k];
-        if (image[4*width*(i+1) + 4*(j+1) + k] > max_val) max_val = image[4*width*(i+1) + 4*(j+1) + k];
-  	    new_image[width*i + 2*j + k] = max_val;
-      }
+	if(blockIdx.x == 0)printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, idx,i,j,k);
+	
+	// __shared__ variables are visible to all threads in the thread block
+	// and have the same lifetime as the thread block
+	extern __shared__ unsigned char sh_d_in[];//__shared__ unsigned char sh_d_in[blockDim.x];
 
-	    new_image[width*i + 2*j + 3] = image[4*width*i + 4*j + 3]; // A
-    }
-  }
-  
-  lodepng_encode32_file(output_filename, new_image, width/2, height/2);
+	// copy data from "d_in" in global memory to sh_arr in shared memory.
+	// here, each thread is responsible for copying a single element.
+	sh_d_in[index] = d_in[idx];
 
-  free(image);
-  free(new_image);
+	__syncthreads();   // ensure all the writes to shared memory have completed
+
+	unsigned char max;
+	int k;
+
+	if(i == 0 && j == 0 && k != 3){
+		max = sh_d_in[4*width*i + 4*j + k];
+		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,i,j,k,index);
+		if(sh_d_in[4*width*(i+1) + 4*j + k]>max) max = sh_d_in[4*width*(i+1) + 4*j + k];
+		if(sh_d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = sh_d_in[4*width*(i+1) + 4*(j+1) + k];
+		if(sh_d_in[4*width*i + 4*(j+1) + k]>max) max = sh_d_in[4*width*i + 4*(j+1) + k];
+		d_out[width*blockIdx.x + j/2 + k] = max;
+		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[width*blockIdx.x + j/2 + k],width*blockIdx.x + j/2 + k,i,j,k,index);
+	}
+	if(i == 0 && j == 0 && k == 3){
+		d_out[width*blockIdx.x + j/2 + 3] = sh_d_in[4*width*i + 4*j + 3];
+	}
 }
 
-int main(int argc, char *argv[])
-{
-  char* input_filename = argv[1];
-  char* output_filename = argv[2];
 
-  process(input_filename, output_filename);
+int process(char* input_filename, char* output_filename){
+	unsigned error;
+	unsigned char *image, *new_image;
+	unsigned width, height;
+	unsigned new_width, new_height;
 
-  return 0;
+	//image --> h_in
+	//new_image --> h_out
+
+	error = lodepng_decode32_file(&image, &width, &height, input_filename);
+	if(error){
+		printf("error %u: %s\n", error, lodepng_error_text(error));
+		return error;
+	}
+	new_width = width/2;
+	new_height = height/2;
+
+	const int size = width * height * 4 * sizeof(unsigned char);
+	const int new_size = new_width * new_height * 4 * sizeof(unsigned char);
+
+	const int block_width = 2 * width);
+	const int block_quantity = (size/block_width + (size % block_width > 0));
+	new_image = (unsigned char *)malloc(new_size);
+
+
+	// declare GPU memory pointers
+	unsigned char * d_in;
+	unsigned char * d_out;
+
+	// allocate GPU memory
+	cudaMalloc(&d_in, size);
+	cudaMalloc(&d_out, new_size);
+
+	// transfer the array to the GPU
+	cudaMemcpy(d_in, image, size, cudaMemcpyHostToDevice);
+
+	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, block_width);
+
+	// launch the kernel
+	rectify<<<block_quantity, block_width>>>(d_out, d_in);
+
+	// copy back the result array to the CPU
+	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
+
+	cudaFree(d_in);
+	cudaFree(d_out);
+
+	lodepng_encode32_file(output_filename, new_image, width, height);
+
+	free(image);
+	free(new_image);
+	return 0;
+}
+
+int main(int argc, char *argv[]){
+	if ( argc >= 3 ){
+		char* input_filename = argv[1];
+		char* output_filename = argv[2];
+
+		int error = process(input_filename, output_filename);
+
+		if(error != 0){
+			printf("An error occured. ( %d )\n",error);
+
+		}else{
+			printf("The rectification ran with success.\n");
+		}
+	}else{
+		printf("There is inputs missing.\n");
+	}
+	return 0;
 }
