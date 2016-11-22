@@ -6,6 +6,9 @@
 #define BLOCK_WIDTH 1000
 
 
+__device__ int counter; // initialise before running kernel
+
+
 __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	unsigned char f = d_in[idx];
@@ -15,7 +18,7 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	if(idx % 4 != 3){
 		if (f < 127){
 			f = 127;
-			printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,f);
+			atomicAdd(&counter, 1);
 		}
 	}
 	d_out[idx] = f;
