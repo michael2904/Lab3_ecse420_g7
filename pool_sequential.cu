@@ -37,7 +37,10 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	//}
 	if(index < width/4){
 		d_out[index] = index;
-		if(index<100)printf("This is the index %d and this is d_out\n",index,d_out[index]);
+		if(index<100){
+			printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, index,idx,jdx,kdx);
+			printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
+		}
 	}
 }
 
