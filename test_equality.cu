@@ -31,7 +31,6 @@ float get_MSE(char* input_filename_1, char* input_filename_2)
     diff = im1 - im2;
     sum += diff * diff;
   }
-  int j;
 
   MSE = sqrt(sum) / (width1 * height1);
 
