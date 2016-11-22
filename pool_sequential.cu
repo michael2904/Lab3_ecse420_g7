@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BLOCK_WIDTH 128
+#define BLOCK_WIDTH 150
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
@@ -17,7 +17,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	int Bix = blockIdx.x;
 	int Biy = blockIdx.y;
 	int Biz = blockIdx.z;
-	int index = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
+	int index = threadIdx.x * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.z;
 	int width = blockDim.x*blockDim.y*blockDim.z;
 
 	//unsigned char max;
