@@ -6,23 +6,23 @@
 #define BLOCK_WIDTH 1000
 
 
-__global__ void rectify(float * d_out, float * d_in){
+__global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
-	float f = d_in[idx];
+	unsigned char f = d_in[idx];
 	if(idx % 1000 == 0){
-		printf("thread %d in block %d: idx = %d and f is %f\n", threadIdx.x, blockIdx.x, idx,f);
+		printf("thread %d in block %d: idx = %d and f is %d\n", threadIdx.x, blockIdx.x, idx,f);
 	}
 	if(idx % 4 == 3){
 		f = f < 127 ? 127 : f; // R
 	}
 	d_out[idx] = f;
-	if(idx % 1000 == 0){
-		printf("thread %d in block %d: idx = %d and became %f\n", threadIdx.x, blockIdx.x, idx,d_out[idx]);
+	if(idx % 1001 == 0){
+		printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,d_out[idx]);
 	}
 }
 
 
-void process(char* input_filename, char* output_filename)
+int process(char* input_filename, char* output_filename)
 {
 	unsigned error;
 	unsigned char *image, *new_image;
@@ -32,15 +32,18 @@ void process(char* input_filename, char* output_filename)
 	//new_image --> h_out
 
 	error = lodepng_decode32_file(&image, &width, &height, input_filename);
-	if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
+	if(error){
+		printf("error %u: %s\n", error, lodepng_error_text(error));
+		return error;
+	}
 
 	const int size = width * height * 4 * sizeof(unsigned char);
 	new_image = (unsigned char *)malloc(size);
 
 
 	// declare GPU memory pointers
-	float * d_in;
-	float * d_out;
+	unsigned char * d_in;
+	unsigned char * d_out;
 
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);
@@ -74,14 +77,25 @@ void process(char* input_filename, char* output_filename)
 
 	free(image);
 	free(new_image);
+	return 0;
 }
 
 int main(int argc, char *argv[])
 {
-	char* input_filename = argv[1];
-	char* output_filename = argv[2];
+	if ( argc >= 3 ){
+		char* input_filename = argv[1];
+		char* output_filename = argv[2];
 
-	process(input_filename, output_filename);
+		int error = process(input_filename, output_filename);
 
+		if(error != -1){
+			printf("An error occured. ( %d )\n",error);
+
+		}else{
+			printf("The rectification ran with success.\n");
+		}
+	}else{
+		printf("There is inputs missing.\n");
+	}
 	return 0;
 }
