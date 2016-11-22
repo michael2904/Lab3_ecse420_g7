@@ -19,8 +19,8 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	if(idx % 4 != 3){
 		if (f < 127){
 			f = 127;
-			int cnt = atomicAdd(&counter, 1);
-			printf("There was %d bytes changed to 127\n",cnt);
+			//int cnt = atomicAdd(&counter, 1);
+			//printf("There was %d bytes changed to 127\n",cnt);
 		}
 	}
 	d_out[idx] = f;
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 		}else{
 			printf("The rectification ran with success.\n");
 			// get mean squared error between image1 and image2
-			float MSE = get_MSE(input_filename, input_filename_test);
+			float MSE = get_MSE(output_filename, input_filename_test);
 
 			if (MSE < MAX_MSE) {
 				printf("Images are equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
