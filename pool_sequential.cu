@@ -7,7 +7,7 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void pool(unsigned char * d_out, unsigned char * d_in){
+__global__ void pool(int * d_out, unsigned char * d_in){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	int jdx = blockDim.y*blockIdx.y + threadIdx.y;
 	int kdx = blockDim.z*blockIdx.z + threadIdx.z;
@@ -60,7 +60,7 @@ int process(char* input_filename, char* output_filename){
 	new_height = (height+1)/2;
 
 	const int size = width * height * 4 * sizeof(unsigned char);
-	const int new_size = new_width * new_height * 4 * sizeof(unsigned char);
+	const int new_size = new_width * new_height * 4 * sizeof(int);
 
 	const int block_quantity = (size+(BLOCK_WIDTH-1))/(BLOCK_WIDTH * 2 * 4);
 	new_image = (unsigned char *)malloc(new_size);
@@ -68,7 +68,7 @@ int process(char* input_filename, char* output_filename){
 
 	// declare GPU memory pointers
 	unsigned char * d_in;
-	unsigned char * d_out;
+	int * d_out;
 
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);
@@ -92,7 +92,7 @@ int process(char* input_filename, char* output_filename){
 	cudaFree(d_in);
 	cudaFree(d_out);
 
-	lodepng_encode32_file(output_filename, new_image, width, height);
+	//lodepng_encode32_file(output_filename, new_image, width, height);
 	int i;
 	for(i = 0; i<1000;i++)printf("new_image[%d] = %d\n",i,new_image[i]);
 
