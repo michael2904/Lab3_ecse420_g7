@@ -15,7 +15,7 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	if(idx % 4 != 3){
 		if (f < 127){
 			f = 127;
-			printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,f;
+			printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,f);
 		}
 	}
 	d_out[idx] = f;
