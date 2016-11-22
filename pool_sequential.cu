@@ -21,19 +21,23 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in, int width_g){
 		printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, index,idx,jdx,kdx);
 	}
 
-	unsigned char max;
-	int new_width = width/2;
-	if(jdx%2 == 0 && kdx != 3){
-		max = d_in[4*width*idx + 4*jdx + kdx];
-		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,idx,jdx,kdx,index);
-		if(d_in[4*width*(idx+1) + 4*jdx + kdx]>max) max = d_in[4*width*(idx+1) + 4*jdx + kdx];
-		if(d_in[4*width*(idx+1) + 4*(jdx+1) + kdx]>max) max = d_in[4*width*(idx+1) + 4*(jdx+1) + kdx];
-		if(d_in[4*width*idx + 4*(jdx+1) + kdx]>max) max = d_in[4*width*idx + 4*(jdx+1) + kdx];
-		d_out[new_width*idx + jdx*2 + kdx] = max;
-		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[new_width*idx + jdx*2 + kdx],new_width*idx + jdx*2 + kdx,idx,jdx,kdx,index);
-	}
-	if(jdx % 2 == 0 && kdx == 3){
-		d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
+	//unsigned char max;
+	//int new_width = width/2;
+	//if(jdx%2 == 0 && kdx != 3){
+	//	max = d_in[4*width*idx + 4*jdx + kdx];
+	//	if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,idx,jdx,kdx,index);
+	//	if(d_in[4*width*(idx+1) + 4*jdx + kdx]>max) max = d_in[4*width*(idx+1) + 4*jdx + kdx];
+	//	if(d_in[4*width*(idx+1) + 4*(jdx+1) + kdx]>max) max = d_in[4*width*(idx+1) + 4*(jdx+1) + kdx];
+	//	if(d_in[4*width*idx + 4*(jdx+1) + kdx]>max) max = d_in[4*width*idx + 4*(jdx+1) + kdx];
+	//	d_out[new_width*idx + jdx*2 + kdx] = max;
+	//	if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[new_width*idx + jdx*2 + kdx],new_width*idx + jdx*2 + kdx,idx,jdx,kdx,index);
+	//}
+	//if(jdx % 2 == 0 && kdx == 3){
+	//	d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
+	//}
+	if(index < width/4){
+		d_out[index] = index;
+		if(index<100)printf("This is the index %d and this is d_out\n",index,d_out[index]);
 	}
 }
 
