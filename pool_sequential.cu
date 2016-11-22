@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BLOCK_WIDTH 512
+#define BLOCK_WIDTH 128
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
@@ -80,8 +80,9 @@ int process(char* input_filename, char* output_filename){
 	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, BLOCK_WIDTH);
 
 	// launch the kernel
-	dim3 dimBlock(BLOCK_WIDTH, 2, 4);
 	dim3 dimGrid(block_quantity, 1, 1);
+	dim3 dimBlock(BLOCK_WIDTH, 2, 4);
+
 
 	pool<<<dimGrid, dimBlock>>>(d_out, d_in);
 
