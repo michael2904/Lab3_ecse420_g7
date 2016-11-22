@@ -7,15 +7,15 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void pool(unsigned char * d_out, unsigned char * d_in, unsigned char * d_w){
+__global__ void pool(unsigned char * d_out, unsigned char * d_in, int width_g){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	int jdx = blockDim.y*blockIdx.y + threadIdx.y;
 	int kdx = blockDim.z*blockIdx.z + threadIdx.z;
 	int index = blockIdx.x * blockDim.x * blockDim.y * blockDim.z + threadIdx.z * blockDim.y * blockDim.x + threadIdx.y * blockDim.x + threadIdx.x;
-	int width = d_w[0];
-	int i = index /width;
-	int j = (index / 4) % (width/4);
-	int k = index % 4;
+	int width = width_g;
+	//int i = index /width;
+	//int j = (index / 4) % (width/4);
+	//int k = index % 4;
 
 	if(blockIdx.x == 0){
 		printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, index,idx,jdx,kdx);
@@ -26,14 +26,14 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in, unsigned char 
 	if(jdx%2 == 0 && kdx != 3){
 		max = d_in[4*width*idx + 4*jdx + kdx];
 		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,idx,jdx,kdx,index);
-		if(sh_d_in[4*width*(idx+1) + 4*jdx + kdx]>max) max = sh_d_in[4*width*(idx+1) + 4*jdx + kdx];
-		if(sh_d_in[4*width*(idx+1) + 4*(jdx+1) + kdx]>max) max = sh_d_in[4*width*(idx+1) + 4*(jdx+1) + kdx];
-		if(sh_d_in[4*width*idx + 4*(jdx+1) + kdx]>max) max = sh_d_in[4*width*idx + 4*(jdx+1) + kdx];
+		if(d_in[4*width*(idx+1) + 4*jdx + kdx]>max) max = d_in[4*width*(idx+1) + 4*jdx + kdx];
+		if(d_in[4*width*(idx+1) + 4*(jdx+1) + kdx]>max) max = d_in[4*width*(idx+1) + 4*(jdx+1) + kdx];
+		if(d_in[4*width*idx + 4*(jdx+1) + kdx]>max) max = d_in[4*width*idx + 4*(jdx+1) + kdx];
 		d_out[new_width*idx + jdx*2 + kdx] = max;
 		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[new_width*idx + jdx*2 + kdx],new_width*idx + jdx*2 + kdx,idx,jdx,kdx,index);
 	}
 	if(jdx % 2 == 0 && k == 3){
-		d_out[new_width * idx + jdx*2 + 3] = sh_d_in[4*width*idx + 4*jdx + 3];
+		d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
 	}
 }
 
@@ -52,37 +52,34 @@ int process(char* input_filename, char* output_filename){
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 		return error;
 	}
-	new_width = width/2;
-	new_height = height/2;
+	new_width = (width+1)/2;
+	new_height = (height+1)/2;
 
 	const int size = width * height * 4 * sizeof(unsigned char);
 	const int new_size = new_width * new_height * 4 * sizeof(unsigned char);
 
-	const int block_quantity = (size+(BLOCK_WIDTH-1)/(BLOCK_WIDTH * 2 * 4);
+	const int block_quantity = (size+(BLOCK_WIDTH-1))/(BLOCK_WIDTH * 2 * 4);
 	new_image = (unsigned char *)malloc(new_size);
 
 
 	// declare GPU memory pointers
 	unsigned char * d_in;
 	unsigned char * d_out;
-	unsigned char * d_w;
 
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);
 	cudaMalloc(&d_out, new_size);
-	cudaMalloc(&d_w, sizeof(unsigned));
 
 	// transfer the array to the GPU
 	cudaMemcpy(d_in, image, size, cudaMemcpyHostToDevice);
-	cudaMemcpy(d_w, width, sizeof(unsigned), cudaMemcpyHostToDevice);
 
-	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, block_width);
+	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, BLOCK_WIDTH);
 
 	// launch the kernel
 	dim3 dimBlock(BLOCK_WIDTH, 2, 4);
 	dim3 dimGrid(block_quantity, 1, 1);
 
-	pool<<<dimGrid, dimBlock>>>(d_out, d_in,d_w);
+	pool<<<dimGrid, dimBlock>>>(d_out, d_in,width);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
