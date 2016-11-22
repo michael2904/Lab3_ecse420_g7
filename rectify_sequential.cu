@@ -21,13 +21,14 @@ void process(char* input_filename, char* output_filename)
 	unsigned error;
 	unsigned char *image, *new_image;
 	unsigned width, height;
-	const int size = width * height * 4 * sizeof(unsigned char);
 
 	//image --> h_in
 	//new_image --> h_out
 
 	error = lodepng_decode32_file(&image, &width, &height, input_filename);
 	if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
+
+	const int size = width * height * 4 * sizeof(unsigned char);
 	new_image = malloc(size);
 
 
