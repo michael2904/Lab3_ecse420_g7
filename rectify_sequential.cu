@@ -47,7 +47,7 @@ int process(char* input_filename, char* output_filename){
 	}
 	int i;
 	for(i = 3968000; i<3968050;i++){
-		//printf("This is image at %d : %d\n",i,image[i]);
+		printf("This is image at %d : %d\n",i,image[i]);
 	}
 	const int size = width * height * 4 * sizeof(unsigned char);
 	new_image = (unsigned char *)malloc(size);
@@ -64,8 +64,10 @@ int process(char* input_filename, char* output_filename){
 	// transfer the array to the GPU
 	cudaMemcpy(d_in, image, size, cudaMemcpyHostToDevice);
 
+	printf("%d total threads in %d blocks of size %d\n",size, (size/BLOCK_WIDTH + (size % BLOCK_WIDTH > 0)), BLOCK_WIDTH);
+
 	// launch the kernel
-	rectify<<<size/BLOCK_WIDTH, BLOCK_WIDTH>>>(d_out, d_in);
+	rectify<<<(size/BLOCK_WIDTH + (size % BLOCK_WIDTH > 0)), BLOCK_WIDTH>>>(d_out, d_in);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, size, cudaMemcpyDeviceToHost);
@@ -74,7 +76,7 @@ int process(char* input_filename, char* output_filename){
 	cudaFree(d_out);
 	int j;
 	for(j = 3968000; j<3968050;j++){
-		//printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image[j],new_image[j],j%4);
+		printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image[j],new_image[j],j%4);
 	}
 	lodepng_encode32_file(output_filename, new_image, width, height);
 
@@ -110,7 +112,7 @@ float get_MSE(char* input_filename_1, char* input_filename_2){
   }
   int j;
   for(j = 3968030; j<3968050;j++){
-    //printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image1[j],image2[j],j%4);
+    printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image1[j],image2[j],j%4);
   }
   MSE = sqrt(sum) / (width1 * height1);
 
@@ -134,13 +136,13 @@ int main(int argc, char *argv[]){
 		}else{
 			printf("The rectification ran with success.\n");
 			// get mean squared error between image1 and image2
-			//float MSE = get_MSE(output_filename, input_filename_test);
+			float MSE = get_MSE(output_filename, input_filename_test);
 
-			//if (MSE < MAX_MSE) {
-			//	printf("Images are equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
-			//} else {
-			//	printf("Images are NOT equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
-			//}
+			if (MSE < MAX_MSE) {
+				printf("Images are equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
+			} else {
+				printf("Images are NOT equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
+			}
 		}
 	}else{
 		printf("There is inputs missing.\n");
