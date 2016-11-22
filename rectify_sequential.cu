@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #define BLOCK_WIDTH 1000
+#define MAX_MSE 0.00001f
 
 
 __device__ int counter; // initialise before running kernel
@@ -146,7 +147,7 @@ int main(int argc, char *argv[])
 		}else{
 			printf("The rectification ran with success.\n");
 			// get mean squared error between image1 and image2
-			float MSE = get_MSE(input_filename_, input_filename_test);
+			float MSE = get_MSE(input_filename, input_filename_test);
 
 			if (MSE < MAX_MSE) {
 				printf("Images are equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
