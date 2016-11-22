@@ -35,7 +35,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	//	d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
 	//}
 	d_out[index] = index;
-	printf("Dimensions are Bx:%d By:%d Bz:%d Index: %d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d)\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,idx,jdx,kdx);
+	printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d)\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,idx,jdx,kdx);
 		printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
 }
 
