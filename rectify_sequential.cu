@@ -26,7 +26,7 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	}
 	d_out[idx] = f;
 	//if(idx <3968060 && idx>3968000 ){
-	if(idx <1000){
+	if(idx % 1000 == 0){
 		printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,d_out[idx]);
 	}
 }
