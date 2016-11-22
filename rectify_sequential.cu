@@ -29,7 +29,7 @@ void process(char* input_filename, char* output_filename)
 	if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
 
 	const int size = width * height * 4 * sizeof(unsigned char);
-	new_image = malloc(size);
+	new_image = malloc((size_t)size);
 
 
 	// declare GPU memory pointers
