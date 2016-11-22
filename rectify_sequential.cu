@@ -15,6 +15,7 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	if(idx % 4 != 3){
 		if (f < 127){
 			f = 127;
+			printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,f;
 		}
 	}
 	d_out[idx] = f;
@@ -79,7 +80,7 @@ int process(char* input_filename, char* output_filename)
 	cudaFree(d_out);
 	int j;
 	for(j = 3968030; j<3968050;j++){
-		printf("This was image at %d: %d and now it is: %d\n",j,image[j],new_image[j]);
+		printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image[j],new_image[j],j%4);
 	}
 	lodepng_encode32_file(output_filename, new_image, width, height);
 
