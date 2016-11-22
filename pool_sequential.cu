@@ -34,7 +34,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	if(index < width/4){
 		d_out[index] = index;
 		if(index<128){
-			printf("Index: %d thread %d,%d in block %d: index = %d so (%d,%d,%d)\n", index,threadIdx.x,threadIdx.y, blockIdx.x,idx,jdx,kdx);
+			printf("Dimensions are Bx:%d By:%d Bz:%d and indexes are: Bix:%d Biy:%d Biz:%d\nThreads are Tx:%d Ty:%d Tz: %d\n Index: %d and coord (%d,%d,%d)\n", blockDim.x,blockDim.y,blockDim.z,blockIdx.x,blockIdx.y,blockIdx.z,index,threadIdx.x,threadIdx.y, threadIdx.z,index,idx,jdx,kdx);
 			printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
 		}
 
