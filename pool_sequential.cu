@@ -17,7 +17,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	int Bix = blockIdx.x;
 	int Biy = blockIdx.y;
 	int Biz = blockIdx.z;
-	int index = threadIdx.x * blockDim.z * blockDim.y + threadIdx.y * blockDim.z + threadIdx.z;
+	int index = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 	int width = blockDim.x*blockDim.y*blockDim.z;
 
 	//unsigned char max;
@@ -35,7 +35,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	//	d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
 	//}
 	d_out[index] = index;
-	printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d)\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,idx,jdx,kdx);
+	printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d)\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,kdx,jdx,idx);
 		printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
 }
 
@@ -78,7 +78,7 @@ int process(char* input_filename, char* output_filename){
 	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, BLOCK_WIDTH);
 
 	// launch the kernel
-	dim3 dimGrid(1, 1, 1);
+	dim3 dimGrid(2, 1, 1);
 	dim3 dimBlock(BLOCK_WIDTH, 2, 4);
 
 
