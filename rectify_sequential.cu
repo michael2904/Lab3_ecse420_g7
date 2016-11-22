@@ -9,14 +9,14 @@
 __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	unsigned char f = d_in[idx];
-	if(idx <1000){
+	if(idx <3968050 && idx>3968030 ){
 		printf("thread %d in block %d: idx = %d and f is %d\n", threadIdx.x, blockIdx.x, idx,f);
 	}
 	if(idx % 4 != 3){
 		f = f < 127 ? 127 : f; // R
 	}
 	d_out[idx] = f;
-	if(idx <1000 ){
+	if(idx <3968050 && idx>3968030 ){
 		printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,d_out[idx]);
 	}
 }
@@ -37,7 +37,7 @@ int process(char* input_filename, char* output_filename)
 		return error;
 	}
 	int i;
-	for(i = 0; i<1000;i++){
+	for(i = 3968030; i<3968050;i++){
 		printf("This is image at %d : %d\n",i,image[i]);
 	}
 	const int size = width * height * 4 * sizeof(unsigned char);
@@ -76,7 +76,7 @@ int process(char* input_filename, char* output_filename)
 	cudaFree(d_in);
 	cudaFree(d_out);
 	int j;
-	for(j = 0; j<1000;j++){
+	for(j = 3968030; j<3968050;j++){
 		printf("This was image at %d: %d and now it is: %d\n",j,image[j],new_image[j]);
 	}
 	lodepng_encode32_file(output_filename, new_image, width, height);
