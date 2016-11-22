@@ -92,7 +92,9 @@ int process(char* input_filename, char* output_filename){
 	cudaFree(d_out);
 
 	lodepng_encode32_file(output_filename, new_image, width, height);
-
+	int i;
+	for(i = 0; i<1000;i++)printf(new_image[%d] = %d || ",new_image[i],i);
+	
 	free(image);
 	free(new_image);
 	return 0;
