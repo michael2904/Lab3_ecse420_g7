@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BLOCK_WIDTH 128
+#define BLOCK_WIDTH 16
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
@@ -11,7 +11,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	int jdx = blockDim.y*blockIdx.y + threadIdx.y;
 	int kdx = blockDim.z*blockIdx.z + threadIdx.z;
-	int index = blockIdx.x * blockDim.x * blockDim.y * blockDim.z + threadIdx.z * blockDim.y * blockDim.x + threadIdx.y * blockDim.x + threadIdx.x;
+	int index = blockIdx.x * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 	int width = blockDim.x*blockDim.y*blockDim.z;
 	//int i = index /width;
 	//int j = (index / 4) % (width/4);
@@ -37,10 +37,11 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	//}
 	if(index < width/4){
 		d_out[index] = index;
-		if(index<100){
+		if(index<128){
 			printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, index,idx,jdx,kdx);
 			printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
 		}
+
 	}
 }
 
@@ -83,7 +84,7 @@ int process(char* input_filename, char* output_filename){
 	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, BLOCK_WIDTH);
 
 	// launch the kernel
-	dim3 dimGrid(block_quantity, 1, 1);
+	dim3 dimGrid(1, 1, 1);
 	dim3 dimBlock(BLOCK_WIDTH, 2, 4);
 
 
@@ -97,7 +98,7 @@ int process(char* input_filename, char* output_filename){
 
 	//lodepng_encode32_file(output_filename, new_image, width, height);
 	int i;
-	for(i = 0; i<1000;i++)printf("new_image[%d] = %d\n",i,new_image[i]);
+	for(i = 0; i<128;i++)printf("new_image[%d] = %d\n",i,new_image[i]);
 
 	free(image);
 	free(new_image);
