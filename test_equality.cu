@@ -31,6 +31,10 @@ float get_MSE(char* input_filename_1, char* input_filename_2)
     diff = im1 - im2;
     sum += diff * diff;
   }
+  int j;
+  for(j = 3968030; j<3968050;j++){
+    printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image[j],new_image[j],j%4);
+  }
   MSE = sqrt(sum) / (width1 * height1);
 
   free(image1);
