@@ -18,7 +18,8 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	if(idx % 4 != 3){
 		if (f < 127){
 			f = 127;
-			atomicAdd(&counter, 1);
+			int cnt = atomicAdd(&counter, 1);
+			printf("There was %d bytes changed to 127\n",cnt);
 		}
 	}
 	d_out[idx] = f;
@@ -85,7 +86,6 @@ int process(char* input_filename, char* output_filename)
 	for(j = 3968030; j<3968050;j++){
 		printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image[j],new_image[j],j%4);
 	}
-	printf("There was %d bytes changed to 127\n",counter);
 	lodepng_encode32_file(output_filename, new_image, width, height);
 
 	free(image);
