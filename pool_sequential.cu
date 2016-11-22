@@ -26,7 +26,6 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	__syncthreads();   // ensure all the writes to shared memory have completed
 
 	unsigned char max;
-	int k;
 
 	if(i == 0 && j == 0 && k != 3){
 		max = sh_d_in[4*width*i + 4*j + k];
@@ -63,7 +62,7 @@ int process(char* input_filename, char* output_filename){
 	const int size = width * height * 4 * sizeof(unsigned char);
 	const int new_size = new_width * new_height * 4 * sizeof(unsigned char);
 
-	const int block_width = 2 * width);
+	const int block_width = 2 * width;
 	const int block_quantity = (size/block_width + (size % block_width > 0));
 	new_image = (unsigned char *)malloc(new_size);
 
