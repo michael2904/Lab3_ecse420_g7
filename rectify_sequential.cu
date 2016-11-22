@@ -85,6 +85,7 @@ int process(char* input_filename, char* output_filename)
 	for(j = 3968030; j<3968050;j++){
 		printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image[j],new_image[j],j%4);
 	}
+	printf("There was %d bytes changed to 127\n",counter);
 	lodepng_encode32_file(output_filename, new_image, width, height);
 
 	free(image);
