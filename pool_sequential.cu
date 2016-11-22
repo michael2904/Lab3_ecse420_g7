@@ -8,18 +8,14 @@
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
 __global__ void pool(int * d_out, unsigned char * d_in){
-	int idx = blockDim.x*blockIdx.x + threadIdx.x;
-	int jdx = blockDim.y*blockIdx.y + threadIdx.y;
-	int kdx = blockDim.z*blockIdx.z + threadIdx.z;
+	int idx = threadIdx.x;
+	int jdx = threadIdx.y;
+	int kdx = blockIdx.x;
 	int index = blockIdx.x * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 	int width = blockDim.x*blockDim.y*blockDim.z;
 	//int i = index /width;
 	//int j = (index / 4) % (width/4);
 	//int k = index % 4;
-
-	if(blockIdx.x == 0){
-		printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, index,idx,jdx,kdx);
-	}
 
 	//unsigned char max;
 	//int new_width = width/2;
@@ -38,7 +34,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	if(index < width/4){
 		d_out[index] = index;
 		if(index<128){
-			printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, index,idx,jdx,kdx);
+			printf("Index: %d thread %d,%d in block %d: index = %d so (%d,%d,%d)\n", index,threadIdx.x,threadIdx.y, blockIdx.x,idx,jdx,kdx);
 			printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
 		}
 
