@@ -5,7 +5,7 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void rectify(unsigned char * d_out, unsigned char * d_in){
+__global__ void pool(unsigned char * d_out, unsigned char * d_in){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	int index = threadIdx.x;
 	int width = blockDim.x / 2;
@@ -13,7 +13,9 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	int j = (index / 4) % (width/4);
 	int k = index % 4;
 
-	if(blockIdx.x == 0)printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, idx,i,j,k);
+	if(blockIdx.x == 0){
+		printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, idx,i,j,k);
+	}
 	
 	// __shared__ variables are visible to all threads in the thread block
 	// and have the same lifetime as the thread block
@@ -81,7 +83,7 @@ int process(char* input_filename, char* output_filename){
 	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, block_width);
 
 	// launch the kernel
-	rectify<<<block_quantity, block_width>>>(d_out, d_in);
+	pool<<<block_quantity, block_width>>>(d_out, d_in);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
