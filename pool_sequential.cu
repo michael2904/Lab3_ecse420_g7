@@ -3,43 +3,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define BLOCK_WIDTH 1024
+
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void pool(unsigned char * d_out, unsigned char * d_in){
+__global__ void pool(unsigned char * d_out, unsigned char * d_in, unsigned char * d_w){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
-	int index = threadIdx.x;
-	int width = blockDim.x / 2;
+	int jdx = blockDim.y*blockIdx.y + threadIdx.y;
+	int kdx = blockDim.z*blockIdx.z + threadIdx.z;
+	int index = blockIdx.x * blockDim.x * blockDim.y * blockDim.z + threadIdx.z * blockDim.y * blockDim.x + threadIdx.y * blockDim.x + threadIdx.x;
+	int width = d_w[0];
 	int i = index /width;
 	int j = (index / 4) % (width/4);
 	int k = index % 4;
 
 	if(blockIdx.x == 0){
-		printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, idx,i,j,k);
+		printf("thread %d in block %d: index = %d so (%d,%d,%d)\n", threadIdx.x, blockIdx.x, index,idx,jdx,kdx);
 	}
-	
-	// __shared__ variables are visible to all threads in the thread block
-	// and have the same lifetime as the thread block
-	extern __shared__ unsigned char sh_d_in[];//__shared__ unsigned char sh_d_in[blockDim.x];
-
-	// copy data from "d_in" in global memory to sh_arr in shared memory.
-	// here, each thread is responsible for copying a single element.
-	sh_d_in[index] = d_in[idx];
-
-	__syncthreads();   // ensure all the writes to shared memory have completed
 
 	unsigned char max;
-
-	if(i == 0 && j == 0 && k != 3){
-		max = sh_d_in[4*width*i + 4*j + k];
-		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,i,j,k,index);
-		if(sh_d_in[4*width*(i+1) + 4*j + k]>max) max = sh_d_in[4*width*(i+1) + 4*j + k];
-		if(sh_d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = sh_d_in[4*width*(i+1) + 4*(j+1) + k];
-		if(sh_d_in[4*width*i + 4*(j+1) + k]>max) max = sh_d_in[4*width*i + 4*(j+1) + k];
-		d_out[width*blockIdx.x + j/2 + k] = max;
-		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[width*blockIdx.x + j/2 + k],width*blockIdx.x + j/2 + k,i,j,k,index);
+	int new_width = width/2;
+	if(jdx%2 == 0 && kdx != 3){
+		max = d_in[4*width*idx + 4*jdx + kdx];
+		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,idx,jdx,kdx,index);
+		if(sh_d_in[4*width*(idx+1) + 4*jdx + kdx]>max) max = sh_d_in[4*width*(idx+1) + 4*jdx + kdx];
+		if(sh_d_in[4*width*(idx+1) + 4*(jdx+1) + kdx]>max) max = sh_d_in[4*width*(idx+1) + 4*(jdx+1) + kdx];
+		if(sh_d_in[4*width*idx + 4*(jdx+1) + kdx]>max) max = sh_d_in[4*width*idx + 4*(jdx+1) + kdx];
+		d_out[new_width*idx + jdx*2 + kdx] = max;
+		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[new_width*idx + jdx*2 + kdx],new_width*idx + jdx*2 + kdx,idx,jdx,kdx,index);
 	}
-	if(i == 0 && j == 0 && k == 3){
-		d_out[width*blockIdx.x + j/2 + 3] = sh_d_in[4*width*i + 4*j + 3];
+	if(jdx % 2 == 0 && k == 3){
+		d_out[new_width * idx + jdx*2 + 3] = sh_d_in[4*width*idx + 4*jdx + 3];
 	}
 }
 
@@ -64,26 +58,31 @@ int process(char* input_filename, char* output_filename){
 	const int size = width * height * 4 * sizeof(unsigned char);
 	const int new_size = new_width * new_height * 4 * sizeof(unsigned char);
 
-	const int block_width = 2 * width;
-	const int block_quantity = (size/block_width + (size % block_width > 0));
+	const int block_quantity = (size+(BLOCK_WIDTH-1)/(BLOCK_WIDTH * 2 * 4);
 	new_image = (unsigned char *)malloc(new_size);
 
 
 	// declare GPU memory pointers
 	unsigned char * d_in;
 	unsigned char * d_out;
+	unsigned char * d_w;
 
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);
 	cudaMalloc(&d_out, new_size);
+	cudaMalloc(&d_w, sizeof(unsigned));
 
 	// transfer the array to the GPU
 	cudaMemcpy(d_in, image, size, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_w, width, sizeof(unsigned), cudaMemcpyHostToDevice);
 
 	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, block_width);
 
 	// launch the kernel
-	pool<<<block_quantity, block_width>>>(d_out, d_in);
+	dim3 dimBlock(BLOCK_WIDTH, 2, 4);
+	dim3 dimGrid(block_quantity, 1, 1);
+
+	pool<<<dimGrid, dimBlock>>>(d_out, d_in,d_w);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
