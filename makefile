@@ -8,10 +8,16 @@ CFLAGS  = -I. -lm
 #
 default: all
 
-all: test_equality rectify_sequential
+all: test_equality rectify_sequential pooling_sequential
 
 # To create the executable file count we need the object files
 #
+
+pooling_sequential:  pooling_sequential.o lodepng.o
+	$(CC) -o pool pooling_sequential.o lodepng.o $(CFLAGS)
+
+pooling_sequential.o: pooling_sequential.cu
+	$(CC) -c pooling_sequential.cu
 
 rectify_sequential:  rectify_sequential.o lodepng.o
 	$(CC) -o rectify rectify_sequential.o lodepng.o $(CFLAGS)
