@@ -17,7 +17,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	int Bix = blockIdx.x;
 	int Biy = blockIdx.y;
 	int Biz = blockIdx.z;
-	int index = blockIdx.x * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
+	int index = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 	int width = blockDim.x*blockDim.y*blockDim.z;
 
 	//unsigned char max;
