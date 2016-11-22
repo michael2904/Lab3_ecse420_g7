@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BLOCK_WIDTH 16
+#define BLOCK_WIDTH 128
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
@@ -35,10 +35,8 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	//	d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
 	//}
 	d_out[index] = index;
-	if(index<128){
-		printf("Dimensions are Bx:%d By:%d Bz:%d and indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- Index: %d and coord (%d,%d,%d)\n", Bx,By,Bz,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,index,idx,jdx,kdx);
+	printf("Dimensions are Bx:%d By:%d Bz:%d and indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- Index: %d and coord (%d,%d,%d)\n", Bx,By,Bz,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,index,idx,jdx,kdx);
 		printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
-	}
 }
 
 
