@@ -7,9 +7,6 @@
 #define MAX_MSE 0.00001f
 
 
-__device__ int counter; // initialise before running kernel
-
-
 __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 	int idx = blockDim.x*blockIdx.x + threadIdx.x;
 	unsigned char f = d_in[idx];
@@ -22,8 +19,6 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 				printf("thread %d in block %d: idx = %d was %d\n", threadIdx.x, blockIdx.x, idx,f);
 			}
 			f = 127;
-			//int cnt = atomicAdd(&counter, 1);
-			//printf("There was %d bytes changed to 127\n",cnt);
 			if(idx <3968060 && idx>3968000 ){
 				printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,f);
 			}
@@ -51,7 +46,7 @@ int process(char* input_filename, char* output_filename)
 		return error;
 	}
 	int i;
-	for(i = 3968030; i<3968050;i++){
+	for(i = 3968000; i<3968050;i++){
 		printf("This is image at %d : %d\n",i,image[i]);
 	}
 	const int size = width * height * 4 * sizeof(unsigned char);
@@ -90,7 +85,7 @@ int process(char* input_filename, char* output_filename)
 	cudaFree(d_in);
 	cudaFree(d_out);
 	int j;
-	for(j = 3968030; j<3968050;j++){
+	for(j = 3968000; j<3968050;j++){
 		printf("This was image at %d: %d and now it is: %d and it is the %d value\n",j,image[j],new_image[j],j%4);
 	}
 	lodepng_encode32_file(output_filename, new_image, width, height);
