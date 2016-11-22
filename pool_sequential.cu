@@ -10,12 +10,15 @@
 __global__ void pool(int * d_out, unsigned char * d_in){
 	int idx = threadIdx.x;
 	int jdx = threadIdx.y;
-	int kdx = blockIdx.x;
+	int kdx = threadIdx.z;
+	int Bx = blockDim.x;
+	int By = blockDim.y;
+	int Bz = blockDim.z;
+	int Bix = blockIdx.x;
+	int Biy = blockIdx.y;
+	int Biz = blockIdx.z;
 	int index = blockIdx.x * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 	int width = blockDim.x*blockDim.y*blockDim.z;
-	//int i = index /width;
-	//int j = (index / 4) % (width/4);
-	//int k = index % 4;
 
 	//unsigned char max;
 	//int new_width = width/2;
@@ -31,13 +34,10 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	//if(jdx % 2 == 0 && kdx == 3){
 	//	d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
 	//}
-	if(index < width/4){
-		d_out[index] = index;
-		if(index<128){
-			printf("Dimensions are Bx:%d By:%d Bz:%d and indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- Index: %d and coord (%d,%d,%d)\n", blockDim.x,blockDim.y,blockDim.z,blockIdx.x,blockIdx.y,blockIdx.z,index,threadIdx.x,threadIdx.y, threadIdx.z,index,idx,jdx,kdx);
-			printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
-		}
-
+	d_out[index] = index;
+	if(index<128){
+		printf("Dimensions are Bx:%d By:%d Bz:%d and indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- Index: %d and coord (%d,%d,%d)\n", Bx,By,Bz,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,index,idx,jdx,kdx);
+		printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
 	}
 }
 
