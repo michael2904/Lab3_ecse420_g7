@@ -25,14 +25,14 @@ __global__ void rectify(unsigned char * d_out, unsigned char * d_in){
 		}
 	}
 	d_out[idx] = f;
-	if(idx <3968060 && idx>3968000 ){
+	//if(idx <3968060 && idx>3968000 ){
+	if(idx <1000){
 		printf("thread %d in block %d: idx = %d and became %d\n", threadIdx.x, blockIdx.x, idx,d_out[idx]);
 	}
 }
 
 
-int process(char* input_filename, char* output_filename)
-{
+int process(char* input_filename, char* output_filename){
 	unsigned error;
 	unsigned char *image, *new_image;
 	unsigned width, height;
@@ -83,8 +83,7 @@ int process(char* input_filename, char* output_filename)
 	return 0;
 }
 
-float get_MSE(char* input_filename_1, char* input_filename_2)
-{
+float get_MSE(char* input_filename_1, char* input_filename_2){
   unsigned error1, error2;
   unsigned char *image1, *image2;
   unsigned width1, height1, width2, height2;
@@ -121,8 +120,7 @@ float get_MSE(char* input_filename_1, char* input_filename_2)
   return MSE;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
 	if ( argc >= 4 ){
 		char* input_filename = argv[1];
 		char* output_filename = argv[2];
