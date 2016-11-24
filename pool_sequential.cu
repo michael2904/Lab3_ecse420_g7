@@ -22,8 +22,11 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int index = col + row * N;
+	int blockId = blockIdx.x + blockIdx.y * gridDim.x; 
+	int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+
 	if(index < 100){
-		printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d) col:%d, row:%d\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,kdx,jdx,idx,col,row);
+		printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d) col:%d, row:%d, blockId:%d threadId:%d\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,idx,jdx,kdx,col,row,blockId,threadId);
 	}
 
 	//unsigned char max;
