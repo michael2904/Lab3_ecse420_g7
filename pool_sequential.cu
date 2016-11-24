@@ -21,7 +21,7 @@ __global__ void pool(int * d_out, unsigned char * d_in){
 	//int index = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
-	int index = idx + jdx * N;
+	int index = col + row * N;
 	if(index < 100){
 		printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d) col:%d, row:%d\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,kdx,jdx,idx,col,row);
 	}
