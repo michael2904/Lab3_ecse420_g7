@@ -78,8 +78,8 @@ int process(char* input_filename, char* output_filename){
 	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, BLOCK_WIDTH);
 
 	// launch the kernel
-	dim3 dimGrid(2, 1, 1);
-	dim3 dimBlock(BLOCK_WIDTH, 2, 4);
+	dim3 dimGrid(2, 2, 2);
+	dim3 dimBlock(2, 2, 2);
 
 
 	pool<<<dimGrid, dimBlock>>>(d_out, d_in);
