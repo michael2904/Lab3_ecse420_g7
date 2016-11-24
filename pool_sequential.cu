@@ -7,7 +7,8 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void pool(int * d_out, unsigned char * d_in, int N){
+__global__ void pool(int * d_out, unsigned char * d_in){
+	int N = 998;
 	int idx = threadIdx.x;
 	int jdx = threadIdx.y;
 	int kdx = threadIdx.z;
@@ -87,7 +88,7 @@ int process(char* input_filename, char* output_filename){
 	dim3 dimBlock(BLOCK_WIDTH, BLOCK_WIDTH);
 
 
-	pool<<<dimGrid, dimBlock>>>(d_out, d_in,width);
+	pool<<<dimGrid, dimBlock>>>(d_out, d_in);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
