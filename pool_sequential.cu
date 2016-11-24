@@ -84,7 +84,7 @@ int process(char* input_filename, char* output_filename){
 
 	// launch the kernel
 	dim3 dimGrid((width+(BLOCK_WIDTH-1))/BLOCK_WIDTH, (height+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
-	dim3 dimBlock(width+BLOCK_WIDTH, BLOCK_WIDTH);
+	dim3 dimBlock(BLOCK_WIDTH, BLOCK_WIDTH);
 
 
 	pool<<<dimGrid, dimBlock>>>(d_out, d_in,width);
