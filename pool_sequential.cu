@@ -14,18 +14,18 @@ __global__ void pool(int * d_out, unsigned char * d_in,int width){
 	int j = (ind % width);
 	int k = (ind % 4);
 
-	if(ind<2000) printf("Index: %05d and width is %d : (%d,%d,%d)\n",ind,width,i,j,k);
+	if(ind<2000) printf("ind: %05d and width is %d : (%d,%d,%d)\n",ind,width,i,j,k);
 
 	unsigned char max;
 	int new_width = width/2;
 	if(j%2 == 0 && k != 3){
 		max = d_in[4*width*i + 4*j + k];
-		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,i,j,k,index);
+		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for ind = %d\n",max,i,j,k,ind);
 		if(d_in[4*width*(i+1) + 4*j + k]>max) max = d_in[4*width*(i+1) + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = d_in[4*width*(i+1) + 4*(j+1) + k];
 		if(d_in[4*width*i + 4*(j+1) + k]>max) max = d_in[4*width*i + 4*(j+1) + k];
 		d_out[new_width*i + j*2 + k] = max;
-		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[new_width*i + j*2 + k],new_width*i + j*2 + k,i,j,k,index);
+		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for ind = %d\n",max,d_out[new_width*i + j*2 + k],new_width*i + j*2 + k,i,j,k,ind);
 	}
 	if(j % 2 == 0 && k == 3){
 		d_out[new_width * i + j*2 + 3] = d_in[4*width*i + 4*j + 3];
