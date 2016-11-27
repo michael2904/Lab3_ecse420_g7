@@ -8,24 +8,10 @@
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
 __global__ void pool(int * d_out, unsigned char * d_in,int N){
-	int idx = threadIdx.x;
-	int jdx = threadIdx.y;
-	int kdx = threadIdx.z;
-	int Bx = blockDim.x;
-	int By = blockDim.y;
-	int Bz = blockDim.z;
-	int Bix = blockIdx.x;
-	int Biy = blockIdx.y;
-	int Biz = blockIdx.z;
-	//int index = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
-	int col = blockIdx.x * blockDim.x + threadIdx.x;
-	int row = blockIdx.y * blockDim.y + threadIdx.y;
-	int index = col + row * N;
-	int blockId = blockIdx.x + blockIdx.y * gridDim.x; 
-	int threadId = blockId * (blockDim.x * blockDim.y) + (threadIdx.y * blockDim.x) + threadIdx.x;
+
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 
-	if(ind<2000) printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d) col:%d, row:%d, blockId:%d threadId:%d\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,idx,jdx,kdx,col,row,blockId,threadId);
+	if(ind<2000) printf("Index: %05d\n",ind);
 
 	//unsigned char max;
 	// int new_width = width/2;
