@@ -8,22 +8,22 @@ CFLAGS  = -I. -lm
 #
 default: all
 
-all: test_equality rectify_sequential pool_sequential
+all: test_equality rectify pool
 
 # To create the executable file count we need the object files
 #
 
-pool_sequential:  pool_sequential.o lodepng.o
-	$(CC) -o pool pool_sequential.o lodepng.o $(CFLAGS)
+pool:  pool.o lodepng.o
+	$(CC) -o pool pool.o lodepng.o $(CFLAGS)
 
-pool_sequential.o: pool_sequential.cu
-	$(CC) -c pool_sequential.cu
+pool.o: pool.cu
+	$(CC) -c pool.cu
 
-rectify_sequential:  rectify_sequential.o lodepng.o
-	$(CC) -o rectify rectify_sequential.o lodepng.o $(CFLAGS)
+rectify:  rectify.o lodepng.o
+	$(CC) -o rectify rectify.o lodepng.o $(CFLAGS)
 
-rectify_sequential.o: rectify_sequential.cu
-	$(CC) -c rectify_sequential.cu
+rectify.o: rectify.cu
+	$(CC) -c rectify.cu
 
 test_equality:  test_equality.o lodepng.o
 	$(CC) -o test_equality test_equality.o lodepng.o $(CFLAGS)
