@@ -7,29 +7,30 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void pool(int * d_out, unsigned char * d_in,int N){
+__global__ void pool(int * d_out, unsigned char * d_in,int width){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
+	int i = (ind + width - 1)/width;
+	int j = (ind % width);
+	int k = (ind % 4);
 
-	if(ind<2000) printf("Index: %05d\n",ind);
+	if(ind<2000) printf("Index: %05d and width is %d : (%d,%d,%d)\n",ind,width,i,j,k);
 
-	//unsigned char max;
-	// int new_width = width/2;
-	//     if(jdx%2 == 0 && kdx != 3){
-	//         max = d_in[4*width*idx + 4*jdx + kdx];
-	//         if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,idx,jdx,kdx,index);
-	//         if(d_in[4*width*(idx+1) + 4*jdx + kdx]>max) max = d_in[4*width*(idx+1) + 4*jdx + kdx];
-	//         if(d_in[4*width*(idx+1) + 4*(jdx+1) + kdx]>max) max = d_in[4*width*(idx+1) + 4*(jdx+1) + kdx];
-	//         if(d_in[4*width*idx + 4*(jdx+1) + kdx]>max) max = d_in[4*width*idx + 4*(jdx+1) + kdx];
-	//         d_out[new_width*idx + jdx*2 + kdx] = max;
-	//         if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[new_width*idx + jdx*2 + kdx],new_width*idx + jdx*2 + kdx,idx,jdx,kdx,index);
-	//     }
-	//     if(jdx % 2 == 0 && kdx == 3){
-	//         d_out[new_width * idx + jdx*2 + 3] = d_in[4*width*idx + 4*jdx + 3];
-	//     }
-	//d_out[index] = index;
-	//printf("Dimensions are Bx:%d By:%d Bz:%d Index: %05d indexes are: Bix:%d Biy:%d Biz:%d -- Threads are Tx:%d Ty:%d Tz: %d -- coord (%d,%d,%d)\n", Bx,By,Bz,index,Bix,Biy,Biz,threadIdx.x,threadIdx.y, threadIdx.z,kdx,jdx,idx);
-	//printf("This is the index %d and this is d_out %d\n",index,d_out[index]);
+	unsigned char max;
+	int new_width = width/2;
+	if(j%2 == 0 && k != 3){
+		max = d_in[4*width*i + 4*j + k];
+		if(blockIdx.x == 0)printf("Original max = %d at (%d,%d,%d) for index = %d\n",max,i,j,k,index);
+		if(d_in[4*width*(i+1) + 4*j + k]>max) max = d_in[4*width*(i+1) + 4*j + k];
+		if(d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = d_in[4*width*(i+1) + 4*(j+1) + k];
+		if(d_in[4*width*i + 4*(j+1) + k]>max) max = d_in[4*width*i + 4*(j+1) + k];
+		d_out[new_width*i + j*2 + k] = max;
+		if(blockIdx.x == 0)printf("Not max = %d and stored %d at %d, at (%d,%d,%d) for index = %d\n",max,d_out[new_width*i + j*2 + k],new_width*i + j*2 + k,i,j,k,index);
+	}
+	if(j % 2 == 0 && k == 3){
+		d_out[new_width * i + j*2 + 3] = d_in[4*width*i + 4*j + 3];
+	}
+
 }
 
 
