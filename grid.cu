@@ -86,14 +86,14 @@ int process(int T){
 		cudaMalloc((void**) &u2_in, size);
 		cudaMalloc((void**) &u_out, size);
 		cudaError_t error0 = cudaGetLastError();
-		if (error0 != cudaSuccess) printf("1st malloc: %s\n",cudaGetErrorString(error0));
+		printf("1st malloc: %s\n",cudaGetErrorString(error0));
 
 		// transfer the array to the GPU
 		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
 		cudaMemcpy(u2_in, u2, size, cudaMemcpyHostToDevice);
 
 		error0 = cudaGetLastError();
-		if (error0 != cudaSuccess) printf("1st copy: %s\n",cudaGetErrorString(error0));
+		printf("1st copy: %s\n",cudaGetErrorString(error0));
 
 		// launch the kernel
 		dim3 dimGrid(((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
@@ -102,26 +102,26 @@ int process(int T){
 		grid_N_First_Step<<<dimGrid, dimBlock>>>((float(*) [N])u_out,(float(*) [N]) u1_in,(float(*) [N])u2_in);
 		
 		error0 = cudaGetLastError();
-		if (error0 != cudaSuccess) printf("1st launch: %s\n",cudaGetErrorString(error0));
+		printf("1st launch: %s\n",cudaGetErrorString(error0));
 
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
 
 		error0 = cudaGetLastError();
-		if (error0 != cudaSuccess) printf("2n copy: %s\n",cudaGetErrorString(error0));
+		printf("2n copy: %s\n",cudaGetErrorString(error0));
 
 		cudaFree(u2_in);
 		cudaFree(u1_in);
 		cudaFree(u_out);
 
 		cudaError_t error1 = cudaGetLastError();
-		if (error1 != cudaSuccess) printf("kernel 1 launch failed: %s\n",cudaGetErrorString(error1));
+		printf("kernel 1 launch failed: %s\n",cudaGetErrorString(error1));
 
 
 		cudaThreadSynchronize();
 
 		cudaError_t error2 = cudaGetLastError();
-		if (error2 != cudaSuccess) printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error2));
+		printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error2));
 
 		// second step
 
