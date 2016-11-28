@@ -17,7 +17,7 @@ __global__ void pool(int * d_out, unsigned char * d_in,int width){
 	if(ind<2000) {
 		printf("ind: %05d and width is %d : (%d,%d,%d)\n",ind,width,i,j,k);
 	}
-	if((j < 5 )&&(i % 100 == 0))printf("Original max for ind = %010d at (%d,%d,%d)\n",ind,i,j,k);
+	if((j % 100 == 0 )&&(i % 100 == 0))printf("Original max for ind = %010d at (%d,%d,%d)\n",ind,i,j,k);
 
 
 	//unsigned char max;
@@ -55,15 +55,14 @@ int process(char* input_filename, char* output_filename){
 	new_height = (height+1)/2;
 
 	const int size = width * height * 4 * sizeof(unsigned char);
-	const int new_size = new_width * new_height * 4 * sizeof(int);
+	const int new_size = new_width * new_height * 4 * sizeof(unsigned char);
 
-	const int block_quantity = (size+(BLOCK_WIDTH-1))/(BLOCK_WIDTH * 2 * 4);
 	new_image = (unsigned char *)malloc(new_size);
 
 
 	// declare GPU memory pointers
 	unsigned char * d_in;
-	int * d_out;
+	unsigned char * d_out;
 
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);
@@ -72,7 +71,7 @@ int process(char* input_filename, char* output_filename){
 	// transfer the array to the GPU
 	cudaMemcpy(d_in, image, size, cudaMemcpyHostToDevice);
 
-	printf("%d total threads in %d blocks of size %d\n",size, block_quantity, BLOCK_WIDTH);
+	printf("%d total size with width %d and height %d in %d blocks of size %d\n",size,width,height, (size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 	// launch the kernel
 	dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
@@ -88,8 +87,8 @@ int process(char* input_filename, char* output_filename){
 	cudaFree(d_out);
 
 	//lodepng_encode32_file(output_filename, new_image, width, height);
-	int i;
-	for(i = 0; i<128;i++)printf("new_image[%d] = %d\n",i,new_image[i]);
+	//int i;
+	//for(i = 0; i<128;i++)printf("new_image[%d] = %d\n",i,new_image[i]);
 
 	free(image);
 	free(new_image);
