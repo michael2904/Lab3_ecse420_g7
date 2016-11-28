@@ -16,7 +16,7 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 	int size = width * height * 4;
 
 
-
+	if(ind == 0)printf("This is the size %d",size);
 	unsigned char max;
 	int new_width = (width)/2;
 	if(j%2 == 0 && k != 3 && ind < size){
@@ -24,13 +24,13 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 		if(d_in[4*width*(i+1) + 4*j + k]>max) max = d_in[4*width*(i+1) + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = d_in[4*width*(i+1) + 4*(j+1) + k];
 		if(d_in[4*width*i + 4*(j+1) + k]>max) max = d_in[4*width*i + 4*(j+1) + k];
-		d_out[width*i + j*2 + k] = max;
+		d_out[2*new_width*i + j*2 + k] = max;
 		if(ind<1000) {
 			printf("ind: %05d (%d,%d,%d) : %d is max between %d, %d, %d, %d, \n",ind,i,j,k,max,d_in[4*width*i + 4*j + k],d_in[4*width*(i+1) + 4*j + k],d_in[4*width*(i+1) + 4*(j+1) + k],d_in[4*width*i + 4*(j+1) + k]);
 		}
 	}
 	if(j % 2 == 0 && k == 3 && ind < size){
-		d_out[width * i + j*2 + 3] = d_in[4*width*i + 4*j + 3];
+		d_out[2*new_width * i + j*2 + 3] = d_in[4*width*i + 4*j + 3];
 	}
 }
 
@@ -89,19 +89,15 @@ int process(char* input_filename, char* output_filename){
 	for(i = 0; i<8;i++){
 		for(j = 0;j<8;j++){
 			printf("(%d,%d,%d):",i,j,k);
-			for(k = 0;k<4;k++){
-				printf(":%d",image[4*width*i + 4*j + k]);
-			}
+			printf(":%d",image[4*width*i + 4*j + 0]);
 			printf(" | ");
 		}
 		printf("\n");
 	}
-	for(i = 0; i<8;i++){
-		for(j = 0;j<8;j++){
+	for(i = 0; i<4;i++){
+		for(j = 0;j<4;j++){
 			printf("(%d,%d,%d):",i,j,k);
-			for(k = 0;k<4;k++){
-				printf(":%d",new_image[4*new_width*i + 4*j + k]);
-			}
+			printf(":%d",new_image[4*new_width*i + 4*j + 0]);
 			printf(" | ");
 		}
 		printf("\n");
