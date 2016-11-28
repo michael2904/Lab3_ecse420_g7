@@ -80,6 +80,7 @@ int process(int T){
 	int t;
 	for (t = 0; t < T; t++) {
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
+		printf(" Try printing %f\n",u[N/2][N/2]);
 		// allocate GPU memory
 		cudaMalloc((void**) &u1_in, size);
 		cudaError_t error0 = cudaGetLastError();
@@ -165,7 +166,7 @@ int process(int T){
 		cudaError_t error4 = cudaGetLastError();
 		printf("kernel 2 execution failed: %s\n",cudaGetErrorString(error4));
 
-
+		printf(" Try printing %f\n",u[N/2][N/2]);
 		// update corners
 		u[0][0] = BOUNDARY_GAIN * u[1][0];
 		error0 = cudaGetLastError();
