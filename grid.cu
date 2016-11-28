@@ -7,7 +7,7 @@
 #define BOUNDARY_GAIN 0.75 // clamped edge vs free edge
 
 
-#define BLOCK_WIDTH 1000
+#define BLOCK_WIDTH 512
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
@@ -18,11 +18,11 @@ __global__ void grid_N_First_Step(float u_out[N][N], float u1_in[N][N],float u2_
 	int j = ((ind) % (N))+1;
 	if(i< N-1 && j<N-1){
 		//do work
-		float sum_of_neighbors, previous_value, previous_previous_value;
-		sum_of_neighbors = u1_in[i-1][j] + u1_in[i+1][j] + u1_in[i][j-1] + u1_in[i][j+1];
-		previous_value = u1_in[i][j];
-		previous_previous_value = u2_in[i][j];
-		u_out[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
+		// float sum_of_neighbors, previous_value, previous_previous_value;
+		// sum_of_neighbors = u1_in[i-1][j] + u1_in[i+1][j] + u1_in[i][j-1] + u1_in[i][j+1];
+		// previous_value = u1_in[i][j];
+		// previous_previous_value = u2_in[i][j];
+		// u_out[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 	}
 }
 
@@ -32,16 +32,16 @@ __global__ void grid_N_Second_Step(float u_out[N][N], float u_in[N][N]){
 	int i = ((ind) / ((N)))+1;
 	int j = ((ind) % (N))+1;
 	if(i< N-1 && j == 0){
-		//do work
-		if(j == 0){
-			u_out[0][i] = BOUNDARY_GAIN * u_in[1][i]; // top
-		}else if(j == 1){
-			u_out[N-1][i] = BOUNDARY_GAIN * u_in[N-2][i]; // bottom
-		}else if(j == 2){
-			u_out[i][0] = BOUNDARY_GAIN * u_in[i][1]; // left
-		}else if(j == 3){
-			u_out[i][N-1] = BOUNDARY_GAIN * u_in[i][N-2]; // right
-		}
+		// //do work
+		// if(j == 0){
+		// 	u_out[0][i] = BOUNDARY_GAIN * u_in[1][i]; // top
+		// }else if(j == 1){
+		// 	u_out[N-1][i] = BOUNDARY_GAIN * u_in[N-2][i]; // bottom
+		// }else if(j == 2){
+		// 	u_out[i][0] = BOUNDARY_GAIN * u_in[i][1]; // left
+		// }else if(j == 3){
+		// 	u_out[i][N-1] = BOUNDARY_GAIN * u_in[i][N-2]; // right
+		// }
 	}
 }
 
