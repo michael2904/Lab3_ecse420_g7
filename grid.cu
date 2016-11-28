@@ -36,9 +36,9 @@ __global__ void grid_N_Second_Step(float u_out[N][N], float u1_in[N][N],float u2
 
 int process(int T){
 	// initialize grid
-	float **u = malloc(N * sizeof(float *));
-	float **u1 = malloc(N * sizeof(float *));
-	float **u2 = malloc(N * sizeof(float *));
+	float **u = (float **) malloc(N * sizeof(float *));
+	float **u1 = (float **) malloc(N * sizeof(float *));
+	float **u2 = (float **) malloc(N * sizeof(float *));
 	int i,j;
 	for (i = 0; i < N; i++) {
 		u[i] = malloc(N * sizeof(float)); 
@@ -105,8 +105,6 @@ int process(int T){
 		// transfer the array to the GPU
 		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
 		cudaMemcpy(u2_in, u2, size, cudaMemcpyHostToDevice);
-
-		printf("%d total size with width %d and height %d in %d blocks of size %d\n",new_size,new_width,new_height, (new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 		// // launch the kernel
 		// dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
