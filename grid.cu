@@ -220,10 +220,10 @@ int process(int T){
 	cudaFree(u2_in);
 	cudaFree(u1_in);
 	cudaFree(u_in);
-	error0 = cudaGetLastError();
+	cudaError_t error5 = cudaGetLastError();
 	printf("8 free: %s\n",cudaGetErrorString(error0));
 	cudaFree(u_out);
-	error0 = cudaGetLastError();
+	error5 = cudaGetLastError();
 	printf("9 free: %s\n",cudaGetErrorString(error0));
 
 	// free grid memory
