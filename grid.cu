@@ -75,7 +75,7 @@ int process(int T){
 		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
 		cudaMemcpy(u2_in, u2, size, cudaMemcpyHostToDevice);
 
-		printf("%d total size with width %d and height %d in %d blocks of size %d\n",new_size,new_width,new_height, (new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
+		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d\n",t,size,N,N, (size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 		// launch the kernel
 		dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
@@ -108,9 +108,9 @@ int process(int T){
 
 		printf("%d total size with width %d and height %d in %d blocks of size %d\n",new_size,new_width,new_height, (new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
-		// launch the kernel
-		dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
-		dim3 dimBlock(BLOCK_WIDTH);
+		// // launch the kernel
+		// dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
+		// dim3 dimBlock(BLOCK_WIDTH);
 
 		grid_N_Second_Step<<<dimGrid, dimBlock>>>((float(*) [N])u_out,(float(*) [N]) u1_in,(float(*) [N])u2_in);
 
