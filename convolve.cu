@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "wm.h"
+#define MAX_MSE 0.00001f
 
 
 #define BLOCK_WIDTH 512
@@ -46,16 +47,22 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 }
 
 
-int process(char* input_filename, char* output_filename){
-	unsigned error;
-	unsigned char *image, *new_image;
+int process(char* input_filename, char* output_filename,char* test_filename){
+	unsigned error,error2;
+	unsigned char *image, *new_image, *test_image;
 	unsigned width, height;
 	unsigned new_width, new_height;
+	unsigned t_width, t_height;
 
 	error = lodepng_decode32_file(&image, &width, &height, input_filename);
 	if(error){
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 		return error;
+	}
+	error2 = lodepng_decode32_file(&test_image, &t_width, &t_height, test_filename);
+	if(error2){
+		printf("error %u: %s\n", error2, lodepng_error_text(error2));
+		return error2;
 	}
 	new_width = (width)-2;
 	new_height = (height)-2;
@@ -125,6 +132,28 @@ int process(char* input_filename, char* output_filename){
 			printf(" | ");
 		}
 		printf("\n");
+	}
+	if(new_width != t_width) printf("images do not have same width\n");
+  	if(new_height != t_height) printf("images do not have same height\n");
+
+  	// process image
+	float im1, im2, diff, sum, MSE;
+	sum = 0;
+	for (i = 0; i < width1 * height1 * 4; i++) {
+		im1 = (float)new_image[i];
+		im2 = (float)test_image[i];
+		if (new_image[i] - test_image[i] != 0){
+			printf("These are the two values: %d - %d at %d / %d\n",new_image[i],test_image[i],i,i%4);
+		}
+		diff = im1 - im2;
+		sum += diff * diff;
+	}
+
+	MSE = sqrt(sum) / (new_width * new_height);
+	if (MSE < MAX_MSE) {
+		printf("Images are equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
+	} else {
+		printf("Images are NOT equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
 	}
 
 	free(image);
