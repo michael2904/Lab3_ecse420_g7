@@ -127,7 +127,7 @@ int process(char* input_filename, char* output_filename){
 		printf("\n");
 	}
 	for(i = 0; i<new_size;i++){
-		if(i>3951700){
+		if(i>3951000){
 			int idx = ((i) / (new_width*4))+1;
 			int jdx = ((i/4) % (new_width))+1;
 			int kdx = (i) % 4;
