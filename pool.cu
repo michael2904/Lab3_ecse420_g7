@@ -31,11 +31,11 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 		if(d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = d_in[4*width*(i+1) + 4*(j+1) + k];
 		if(d_in[4*width*i + 4*(j+1) + k]>max) max = d_in[4*width*i + 4*(j+1) + k];
 		d_out[new_width*i + j*2 + k] = max;
-		if(j < 10 )printf("Original max %d at (%d,%d,%d) for ind = %d\n",max,i,j,k,ind);
+		if(j < 10 )printf("Original for ind = %d max %d at (%d,%d,%d)\n",ind,max,i,j,k);
 	}
 	if(j % 2 == 0 && k == 3){
 		d_out[new_width * i + j*2 + 3] = d_in[4*width*i + 4*j + 3];
-		if(j < 10 )printf("Original max %d at (%d,%d,%d) for ind = %d\n",max,i,j,k,ind);
+		if(j < 10 )printf("Original for ind = %d max %d at (%d,%d,%d)\n",ind,max,i,j,k);
 	}
 }
 
