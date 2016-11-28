@@ -159,22 +159,32 @@ int process(int T){
 		error0 = cudaGetLastError();
 		printf("9 free: %s\n",cudaGetErrorString(error0));
 		cudaError_t error3 = cudaGetLastError();
-		if (error3 != cudaSuccess) printf("kernel 2 launch failed: %s\n",cudaGetErrorString(error3));
+		printf("kernel 2 launch failed: %s\n",cudaGetErrorString(error3));
 
 		cudaThreadSynchronize();
 		cudaError_t error4 = cudaGetLastError();
-		if (error4 != cudaSuccess) printf("kernel 2 execution failed: %s\n",cudaGetErrorString(error4));
+		printf("kernel 2 execution failed: %s\n",cudaGetErrorString(error4));
 
 
 		// update corners
 		u[0][0] = BOUNDARY_GAIN * u[1][0];
+		error0 = cudaGetLastError();
+		printf("10 copy: %s\n",cudaGetErrorString(error0));
 		u[N-1][0] = BOUNDARY_GAIN * u[N-2][0];
+		error0 = cudaGetLastError();
+		printf("11 copy: %s\n",cudaGetErrorString(error0));
 		u[0][N-1] = BOUNDARY_GAIN * u[0][N-2];
+		error0 = cudaGetLastError();
+		printf("12 copy: %s\n",cudaGetErrorString(error0));
 		u[N-1][N-1] = BOUNDARY_GAIN * u[N-1][N-2];
+		error0 = cudaGetLastError();
+		printf("13 copy: %s\n",cudaGetErrorString(error0));
 
 		// print_grid(u);
 
 		audio[t] = u[N/2][N/2];
+		error0 = cudaGetLastError();
+		printf("14 copy: %s\n",cudaGetErrorString(error0));
 		printf("%f,\n", audio[t]);
 
 		temp = u2;
