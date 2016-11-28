@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BLOCK_WIDTH 512
+#define BLOCK_WIDTH 1024
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
@@ -14,8 +14,8 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 	int j = (ind/4) % (width);
 	int k = (ind) % 4;
 	int size = width * height * 4;
-	unsigned char max;
 	if(i%2 == 0 && j%2 == 0 && k != 3 && ind < size){
+		unsigned char max;
 		max = d_in[4*width*i + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*j + k]>max) max = d_in[4*width*(i+1) + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = d_in[4*width*(i+1) + 4*(j+1) + k];

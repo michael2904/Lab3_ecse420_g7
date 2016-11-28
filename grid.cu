@@ -80,7 +80,6 @@ int process(int T){
 	int t;
 	for (t = 0; t < T; t++) {
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
-
 		// allocate GPU memory
 		cudaMalloc((void**) &u1_in, size);
 		cudaError_t error0 = cudaGetLastError();

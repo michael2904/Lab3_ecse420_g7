@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BLOCK_WIDTH 1000
+#define BLOCK_WIDTH 1024
 #define MAX_MSE 0.00001f
 
 
