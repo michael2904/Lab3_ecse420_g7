@@ -13,19 +13,10 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int new_size = (width-2) * (height -2) * 4;
-	if(ind<new_size){
-		int i = ((ind) / ((width)*4))+1;
-		int j = ((ind/4) % (width))+1;
-		int k = (ind) % 4;
-		int ii,jj;
-		if(ind == 0){
-			for (ii = 0; ii < 3; ii++) {
-				for (jj = 0; jj < 3; jj++) {
-					printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
-				}
-				printf("\n");
-			}
-		}
+	int i = ((ind) / ((width)*4))+1;
+	int j = ((ind/4) % (width))+1;
+	int k = (ind) % 4;
+	if(i< height-1 && j<width-1){
 		if(k != 3){
 			float currentWF = 0;
 			float value = 0;
@@ -88,7 +79,7 @@ int process(char* input_filename, char* output_filename){
 	printf("%d total size with width %d and height %d in %d blocks of size %d\n",new_size,new_width,new_height, (new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 	// launch the kernel
-	dim3 dimGrid((new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
+	dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 	dim3 dimBlock(BLOCK_WIDTH);
 
 	int ii,jj;
