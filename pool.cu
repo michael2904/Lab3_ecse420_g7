@@ -19,7 +19,7 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 	if(ind == 0)printf("This is the size %d\n",size);
 	unsigned char max;
 	int new_width = (width)/2;
-	if(j%2 == 0 && k != 3 && ind < size){
+	if(i%2 == 0 && j%2 == 0 && k != 3 && ind < size){
 		max = d_in[4*width*i + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*j + k]>max) max = d_in[4*width*(i+1) + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = d_in[4*width*(i+1) + 4*(j+1) + k];
@@ -29,7 +29,7 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 			printf("ind: %05d (%d,%d,%d) : %d is max between %d, %d, %d, %d, \n",ind,i,j,k,max,d_in[4*width*i + 4*j + k],d_in[4*width*(i+1) + 4*j + k],d_in[4*width*(i+1) + 4*(j+1) + k],d_in[4*width*i + 4*(j+1) + k]);
 		}
 	}
-	if(j % 2 == 0 && k == 3 && ind < size){
+	if(i%2 == 0 && j % 2 == 0 && k == 3 && ind < size){
 		d_out[2*new_width * i + j*2 + 3] = d_in[4*width*i + 4*j + 3];
 	}
 }
