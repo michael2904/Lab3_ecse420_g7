@@ -139,6 +139,12 @@ int process(int T){
 		cudaError_t error2 = cudaGetLastError();
 		printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error2));
 
+		for (i = 0; i < 5; i++) {
+			for (j = 0; j < 5; j++) {
+				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[i][j],u1[i][j],u2[i][j]);
+			}
+		}
+
 		// second step
 
 		// allocate GPU memory
