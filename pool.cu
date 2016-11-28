@@ -17,7 +17,7 @@ __global__ void pool(int * d_out, unsigned char * d_in,int width){
 	if(ind<2000) {
 		printf("ind: %05d and width is %d : (%d,%d,%d)\n",ind,width,i,j,k);
 	}
-	if((j < 5 )&&(i % 100 == 0))printf("Original max for ind = %05d at (%05d,%05d,%05d)\n",ind,i,j,k);
+	if((j < 5 )&&(i % 100 == 0))printf("Original max for ind = %010d at (%d,%d,%d)\n",ind,i,j,k);
 
 
 	//unsigned char max;
