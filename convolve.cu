@@ -19,7 +19,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	if(ind == 0){
 		for (ii = 0; ii < 3; ii++) {
 			for (jj = 0; jj < 3; jj++) {
-				//printf("w(%d,%d)=%d|",ii,jj,w[ii][jj]);
+				printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
 			}
 			printf("\n");
 		}
