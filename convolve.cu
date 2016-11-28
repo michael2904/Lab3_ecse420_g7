@@ -15,6 +15,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	int i = ((ind) / (width*4))+1;
 	int j = ((ind/4) % (width))+1;
 	int k = (ind) % 4;
+	int ii,jj;
 	if(ind == 0){
 		for (ii = 0; ii < 3; ii++) {
 			for (jj = 0; jj < 3; jj++) {
@@ -26,7 +27,6 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	if(k != 3){
 		float currentWF = 0;
 		float value = 0;
-		int ii,jj;
 		for (ii = 0; ii < 3; ii++) {
 			for (jj = 0; jj < 3; jj++) {
 				currentWF = w[ii][jj];
