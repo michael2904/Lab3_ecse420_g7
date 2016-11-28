@@ -98,7 +98,7 @@ int process(int T){
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d\n",t,size,N,N, (size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 		// launch the kernel
-		dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
+		dim3 dimGrid(((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 		dim3 dimBlock(BLOCK_WIDTH);
 
 		grid_N_First_Step<<<dimGrid, dimBlock>>>((float(*) [N])u_out,(float(*) [N]) u1_in,(float(*) [N])u2_in);
