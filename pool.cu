@@ -10,16 +10,16 @@
 __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int height){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	int i = (ind + width - 1)/width;
-	int j = (ind % width);
-	int k = (ind % 4);
+	int i = (ind + width - 1) / width;
+	int j = (ind + width - 1) % width;
+	int k = (ind + 3) % 4;
 	int size = width * height * 4;
 
 	if(ind<2000) {
-		printf("ind: %05d and width is %d : (%d,%d,%d)\n",ind,width,i,j,k);
+		printf("ind: %05d and width is %d height is %d : (%d,%d,%d)\n",ind,width,height,i,j,k);
 	}
 	if((j % 100 == 0 )&&(i % 100 == 0) && ind < size){
-		printf("Original max for ind: %010d at (%04d,%04d,%04d)\n",ind,i,j,k);
+		printf("Original ind: %010d at (%04d,%04d,%04d)\n",ind,i,j,k);
 	}
 
 
