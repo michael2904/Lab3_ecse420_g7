@@ -85,7 +85,7 @@ int process(int T){
 		cudaError_t error0 = cudaGetLastError();
 		printf("1st malloc: %s\n",cudaGetErrorString(error0));
 		cudaMalloc((void**) &u2_in, size);
-		cudaError_t error0 = cudaGetLastError();
+		error0 = cudaGetLastError();
 		printf("2nd malloc: %s\n",cudaGetErrorString(error0));
 		cudaMalloc((void**) &u_out, size);
 		error0 = cudaGetLastError();

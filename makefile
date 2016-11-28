@@ -10,6 +10,8 @@ default: all
 
 all: test_equality rectify pool convolve grid grid_sequential
 
+nogrid: test_equality rectify pool convolve
+
 # To create the executable file count we need the object files
 #
 
