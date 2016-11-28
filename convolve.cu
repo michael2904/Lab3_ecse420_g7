@@ -139,7 +139,7 @@ int process(char* input_filename, char* output_filename,char* test_filename){
   	// process image
 	float im1, im2, diff, sum, MSE;
 	sum = 0;
-	for (i = 0; i < width1 * height1 * 4; i++) {
+	for (i = 0; i < new_size; i++) {
 		im1 = (float)new_image[i];
 		im2 = (float)test_image[i];
 		if (new_image[i] - test_image[i] != 0){
@@ -162,11 +162,12 @@ int process(char* input_filename, char* output_filename,char* test_filename){
 }
 
 int main(int argc, char *argv[]){
-	if ( argc >= 3 ){
+	if ( argc >= 4 ){
 		char* input_filename = argv[1];
 		char* output_filename = argv[2];
+		char* test_filename = argv[3];
 
-		int error = process(input_filename, output_filename);
+		int error = process(input_filename, output_filename,test_filename);
 
 		if(error != 0){
 			printf("An error occured. ( %d )\n",error);
