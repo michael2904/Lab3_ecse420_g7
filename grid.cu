@@ -153,7 +153,11 @@ int process(int T){
 		printf("7 copy: %s\n",cudaGetErrorString(error0));
 
 		cudaFree(u_in);
+		error0 = cudaGetLastError();
+		printf("8 free: %s\n",cudaGetErrorString(error0));
 		cudaFree(u_out);
+		error0 = cudaGetLastError();
+		printf("9 free: %s\n",cudaGetErrorString(error0));
 		cudaError_t error3 = cudaGetLastError();
 		if (error3 != cudaSuccess) printf("kernel 2 launch failed: %s\n",cudaGetErrorString(error3));
 
