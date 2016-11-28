@@ -81,8 +81,8 @@ int process(int T){
 	for (t = 0; t < T; t++) {
 
 		// allocate GPU memory
-		cudaMalloc(&u1_in, size);
-		cudaMalloc(&u2_in, size);
+		cudaMalloc((void**) &u1_in, size);
+		cudaMalloc((void**) &u2_in, size);
 
 		// transfer the array to the GPU
 		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
