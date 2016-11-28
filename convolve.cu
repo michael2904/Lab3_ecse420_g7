@@ -5,45 +5,47 @@
 #include "wm.h"
 
 
-#define BLOCK_WIDTH 512
+#define BLOCK_WIDTH 1024
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
 __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,int height,float w[3][3]){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	int i = ((ind) / (width*4))+1;
-	int j = ((ind/4) % (width))+1;
-	int k = (ind) % 4;
-	int size = (width-2) * (height -2) * 4;
-	int ii,jj;
-	if(ind == 0){
-		for (ii = 0; ii < 3; ii++) {
-			for (jj = 0; jj < 3; jj++) {
-				printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
-			}
-			printf("\n");
-		}
-	}
-	if(k != 3){
-		float currentWF = 0;
-		float value = 0;
-		for (ii = 0; ii < 3; ii++) {
-			for (jj = 0; jj < 3; jj++) {
-				currentWF = w[ii][jj];
-				value += ((float) d_in[4*(width-2)*(i+ii-1) + 4*(j+jj-1) + k]) * currentWF;
-				if(ind >3952050)printf("Index %d (%d,%d) value at %f %f * %f\n",ind,ii,jj,value,(float)d_in[4*(width-2)*(i+ii-1) + 4*(j+jj-1) + k],currentWF);
+	int new_size = (width-2) * (height -2) * 4;
+	if(ind<new_size){
+		int i = ((ind) / ((width)*4))+1;
+		int j = ((ind/4) % (width))+1;
+		int k = (ind) % 4;
+		int ii,jj;
+		if(ind == 0){
+			for (ii = 0; ii < 3; ii++) {
+				for (jj = 0; jj < 3; jj++) {
+					printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
+				}
+				printf("\n");
 			}
 		}
-		if(ind >3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width-2)*(i) + 4*(j) + k],value);
-		if((value)<0) value = 0;
-		if((value)>255) value = 255;
-		if(ind > 3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width-2)*(i) + 4*(j) + k],value);
-		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
-	}else if( k == 3){
-		if(ind > 3952050)printf("Old value at %d was %d and became %d\n",ind,d_in[4*(width-2)*(i) + 4*(j) + k],d_out[4*(width-2)*(i-1) + 4*(j-1) + 3]);
-		d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = 255;
-		if(ind > 3952050)printf("Old value at %d was %d and became %d\n",ind,d_in[4*(width-2)*(i) + 4*(j) + k],d_out[4*(width-2)*(i-1) + 4*(j-1) + 3]);
+		if(k != 3){
+			float currentWF = 0;
+			float value = 0;
+			for (ii = 0; ii < 3; ii++) {
+				for (jj = 0; jj < 3; jj++) {
+					currentWF = w[ii][jj];
+					value += ((float) d_in[4*(width)*(i+ii-1) + 4*(j+jj-1) + k]) * currentWF;
+					if(ind >3952050)printf("Index %d (%d,%d) value at %f %f * %f\n",ind,ii,jj,value,(float)d_in[4*(width)*(i+ii-1) + 4*(j+jj-1) + k],currentWF);
+				}
+			}
+			if(ind >3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width)*(i) + 4*(j) + k],value);
+			if((value)<0) value = 0;
+			if((value)>255) value = 255;
+			if(ind > 3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width)*(i) + 4*(j) + k],value);
+			d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
+		}else if( k == 3){
+			if(ind > 3952050)printf("Old value at %d was %d and became %d\n",ind,d_in[4*(width)*(i) + 4*(j) + k],d_out[4*(width-2)*(i-1) + 4*(j-1) + 3]);
+			d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = 255;
+			if(ind > 3952050)printf("Old value at %d was %d and became %d\n",ind,d_in[4*(width)*(i) + 4*(j) + k],d_out[4*(width-2)*(i-1) + 4*(j-1) + 3]);
+		}
 	}
 }
 
@@ -118,22 +120,6 @@ int process(char* input_filename, char* output_filename){
 			int kdx = (i) % 4;
 			printf("%d-(%d,%d,%d):%d\n",i,idx,jdx,kdx,new_image[i]);
 		}
-	}
-	for(i = 0; i<8;i++){
-		for(j = 0;j<8;j++){
-			printf("(%d,%d,%d):",i,j,k);
-			printf(":%d",image[4*width*i + 4*j + 0]);
-			printf(" | ");
-		}
-		printf("\n");
-	}
-	for(i = 0; i<4;i++){
-		for(j = 0;j<4;j++){
-			printf("(%d,%d,%d):",i,j,k);
-			printf(":%d",new_image[4*new_width*i + 4*j + 0]);
-			printf(" | ");
-		}
-		printf("\n");
 	}
 	lodepng_encode32_file(output_filename, new_image, new_width, new_height);
 
