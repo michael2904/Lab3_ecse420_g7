@@ -69,6 +69,7 @@ int process(char* input_filename, char* output_filename){
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);
 	cudaMalloc(&d_out, new_size);
+	cudaMalloc(&w, 9 * sizeof(float));
 
 	// transfer the array to the GPU
 	cudaMemcpy(d_in, image, size, cudaMemcpyHostToDevice);
