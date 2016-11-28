@@ -81,7 +81,7 @@ int process(char* input_filename, char* output_filename){
 	cudaMemcpy (w_d, w, 9 * sizeof(float), cudaMemcpyHostToDevice);
 
 
-	printf("%d total size with width %d and height %d in %d blocks of size %d\n",size,width,height, (size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
+	printf("%d total size with width %d and height %d in %d blocks of size %d\n",new_size,new_width,new_height, (new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 	// launch the kernel
 	dim3 dimGrid((new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
