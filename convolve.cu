@@ -65,14 +65,17 @@ int process(char* input_filename, char* output_filename){
 	// declare GPU memory pointers
 	unsigned char * d_in;
 	unsigned char * d_out;
+	float *w_d = 0;
 
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);
 	cudaMalloc(&d_out, new_size);
-	cudaMalloc((void**) w, 9 * sizeof(float));
+	cudaMalloc((void**) w_d, 9 * sizeof(float));
 
 	// transfer the array to the GPU
 	cudaMemcpy(d_in, image, size, cudaMemcpyHostToDevice);
+	cudaMemcpy (w_d, W, 9 * sizeof(float), cudaMemcpyHostToDevice);
+
 
 	printf("%d total size with width %d and height %d in %d blocks of size %d\n",size,width,height, (size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
@@ -87,7 +90,7 @@ int process(char* input_filename, char* output_filename){
 		}
 		printf("\n");
 	}
-	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,(float(*) [3])w);
+	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,w_d);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
