@@ -130,19 +130,27 @@ int process(int T){
 
 		// allocate GPU memory
 		cudaMalloc(&u_in, size);
+		error0 = cudaGetLastError();
+		printf("3rd malloc: %s\n",cudaGetErrorString(error0));
 		cudaMalloc(&u_out, size);
-
+		error0 = cudaGetLastError();
+		printf("4 malloc: %s\n",cudaGetErrorString(error0));
 		// transfer the array to the GPU
 		cudaMemcpy(u_in, u, size, cudaMemcpyHostToDevice);
+		error0 = cudaGetLastError();
+		printf("5 malloc: %s\n",cudaGetErrorString(error0));
 
 		// // launch the kernel
 		// dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 		// dim3 dimBlock(BLOCK_WIDTH);
 
 		grid_N_Second_Step<<<dimGrid, dimBlock>>>((float(*) [N])u_out,(float(*) [N]) u_in);
-
+		error0 = cudaGetLastError();
+		printf("6 running: %s\n",cudaGetErrorString(error0));
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
+		error0 = cudaGetLastError();
+		printf("7 copy: %s\n",cudaGetErrorString(error0));
 
 		cudaFree(u_in);
 		cudaFree(u_out);
