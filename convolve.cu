@@ -19,7 +19,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	if(ind == 0){
 		for (ii = 0; ii < 3; ii++) {
 			for (jj = 0; jj < 3; jj++) {
-				printf("ind %d w(%d,%d)=%f|\n",ind,ii,jj,w[ii][jj]);
+				printf("ind %d w(%d,%d)=%f|",ind,ii,jj,w[ii][jj]);
 			}
 			printf("\n");
 		}
@@ -31,7 +31,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			for (jj = 0; jj < 3; jj++) {
 				currentWF = w[ii][jj];
 				value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
-				if(ind>3952120)printf("w(%d,%d)=%f|value : %f|",ii,jj,w[ii][jj],value);
+				if(ind>3952120)printf("ind %d w(%d,%d)=%f|value : %f|\n",ii,jj,w[ii][jj],value);
 			}
 			if(ind>3952120)printf("\n");
 		}
