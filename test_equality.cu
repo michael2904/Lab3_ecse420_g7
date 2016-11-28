@@ -26,9 +26,9 @@ float get_MSE(char* input_filename_1, char* input_filename_2)
     im1 = (float)image1[i];
     im2 = (float)image2[i];
     if (image1[i] - image2[i] != 0){
-      idx = ((ind) / ((width)*4))+1;
-      jdx = ((ind/4) % (width))+1;
-      kdx = (ind) % 4;
+      idx = ((i) / ((width1)*4))+1;
+      jdx = ((i/4) % (width1))+1;
+      kdx = (i) % 4;
       printf("These are the two values: %d - %d at %d / (%d,%d,%d)\n",image1[i],image2[i],i,idx,jdx,kdx);
     }
     diff = im1 - im2;
