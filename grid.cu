@@ -103,11 +103,14 @@ int process(int T){
 		cudaFree(u1_in);
 		cudaFree(u_out);
 
-		if (cudaGetLastError() != cudaSuccess) printf("kernel 1 launch failed\n");
+		cudaError_t error1 = cudaGetLastError();
+		if (error1 != cudaSuccess) printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error1));
+
 
 		cudaThreadSynchronize();
 
-		if (cudaGetLastError() != cudaSuccess) printf("kernel 1 execution failed\n");
+		cudaError_t error2 = cudaGetLastError();
+		if (error2 != cudaSuccess) printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error2));
 
 		// second step
 
@@ -128,12 +131,12 @@ int process(int T){
 
 		cudaFree(u_in);
 		cudaFree(u_out);
-
-		if (cudaGetLastError() != cudaSuccess) printf("kernel 1 launch failed\n");
+		cudaError_t error3 = cudaGetLastError();
+		if (error3 != cudaSuccess) printf("kernel 2 launch failed: %s\n",cudaGetErrorString(error3));
 
 		cudaThreadSynchronize();
-
-		if (cudaGetLastError() != cudaSuccess) printf("kernel 1 execution failed\n");
+		cudaError_t error4 = cudaGetLastError();
+		if (error4 != cudaSuccess) printf("kernel 2 execution failed: %s\n",cudaGetErrorString(error4));
 
 
 		// update corners
