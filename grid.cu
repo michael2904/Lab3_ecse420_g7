@@ -14,22 +14,34 @@
 __global__ void grid_N_First_Step(float u_out[N][N], float u1_in[N][N],float u2_in[N][N]){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	int i = ((ind) / ((N)*4))+1;
-	int j = ((ind/4) % (N))+1;
-	int k = (ind) % 4;
+	int i = ((ind) / ((N)))+1;
+	int j = ((ind) % (N))+1;
 	if(i< N-1 && j<N-1){
 		//do work
+		float sum_of_neighbors, previous_value, previous_previous_value;
+		sum_of_neighbors = u1[i-1][j] + u1[i+1][j] + u1[i][j-1] + u1[i][j+1];
+		previous_value = u1[i][j];
+		previous_previous_value = u2[i][j];
+		u[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 	}
 }
 
 __global__ void grid_N_Second_Step(float u_out[N][N], float u1_in[N][N],float u2_in[N][N]){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	int i = ((ind) / ((N)*4))+1;
-	int j = ((ind/4) % (N))+1;
-	int k = (ind) % 4;
-	if(i< N-1 && j<N-1){
+	int i = ((ind) / ((N)))+1;
+	int j = ((ind) % (N))+1;
+	if(i< N-1 && j == 0){
 		//do work
+		if(j == 0){
+			u[0][i] = BOUNDARY_GAIN * u[1][i]; // top
+		}else if(j == 1){
+			u[N-1][i] = BOUNDARY_GAIN * u[N-2][i]; // bottom
+		}else if(j == 2){
+			u[i][0] = BOUNDARY_GAIN * u[i][1]; // left
+		}else if(j == 3){
+			u[i][N-1] = BOUNDARY_GAIN * u[i][N-2]; // right
+		}
 	}
 }
 
