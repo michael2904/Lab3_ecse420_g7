@@ -5,7 +5,7 @@
 #include "wm.h"
 
 
-#define BLOCK_WIDTH 1024
+#define BLOCK_WIDTH 1000
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
@@ -112,12 +112,12 @@ int process(char* input_filename, char* output_filename){
 
 	if (cudaGetLastError() != cudaSuccess) printf("kernel execution failed\n");
 
-	int i,j,k;
+	int i,idx,jdx,kdx;
 	for(i = 0; i<new_size;i++){
 		if(i>3951000){
-			int idx = ((i) / (new_width*4))+1;
-			int jdx = ((i/4) % (new_width))+1;
-			int kdx = (i) % 4;
+			idx = ((i) / (new_width*4))+1;
+			jdx = ((i/4) % (new_width))+1;
+			kdx = (i) % 4;
 			printf("%d-(%d,%d,%d):%d\n",i,idx,jdx,kdx,new_image[i]);
 		}
 	}
