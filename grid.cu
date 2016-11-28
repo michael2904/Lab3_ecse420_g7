@@ -41,9 +41,9 @@ int process(int T){
 	float **u2 = (float **) malloc(N * sizeof(float *));
 	int i,j;
 	for (i = 0; i < N; i++) {
-		u[i] = malloc(N * sizeof(float)); 
-		u1[i] = malloc(N * sizeof(float));
-		u2[i] = malloc(N * sizeof(float));
+		u[i] = (float *)malloc(N * sizeof(float)); 
+		u1[i] = (float *)malloc(N * sizeof(float));
+		u2[i] = (float *)malloc(N * sizeof(float));
 		for (j = 0; j < N; j++) {
 			u[i][j] = 0;
 			u1[i][j] = 0;
