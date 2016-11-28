@@ -11,8 +11,8 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = (ind + (width * 4) - 1) / (width*4);
-	int j = (ind + (width * 4) - 1) % (width*4);
-	int k = (ind + 3) % 4;
+	int j = (ind) % (width*4);
+	int k = (ind) % 4;
 	int size = width * height * 4;
 
 	if(ind<2000) {
