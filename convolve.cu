@@ -16,6 +16,8 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	int i = ((ind) / (width*4))+1;
 	int j = ((ind/4) % (width))+1;
 	int k = (ind) % 4;
+	int val = i*(width-2) + j;
+	int size = (width-2) * (height -2) * 4;
 	int ii,jj;
 	if(ind == 0){
 		for (ii = 0; ii < 3; ii++) {
@@ -25,23 +27,23 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			printf("\n");
 		}
 	}
-	if(k != 3){
+	if(k != 3 && ind<size){
 		float currentWF = 0;
 		float value = 0;
 		for (ii = 0; ii < 3; ii++) {
 			for (jj = 0; jj < 3; jj++) {
 				currentWF = w[ii][jj];
 				value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
-				if(ind>3952120)printf("ind %d w(%d,%d)=%f|value : %f|\n",ind,ii,jj,w[ii][jj],value);
+				if(val>3952120)printf("ind %d w(%d,%d)=%f|value : %f|\n",val,ii,jj,w[ii][jj],value);
 			}
-			if(ind>3952120)printf("\n");
+			if(val>3952120)printf("\n");
 		}
-		if(ind>3952120)printf("\nind %d value : %f\n",ind,value);
+		if(val>3952120)printf("\nind %d value : %f\n",val,value);
 		value = value > 255 ? 255 : value;
 		value = value < 0 ? 0 : value;
-		if(ind>3952120)printf("\nind %d value : %f\n",ind,value);
+		if(val>3952120)printf("\nind %d value : %f\n",val,value);
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
-	}else{
+	}else if( k == 3 && ind<size){
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
 	}
 }
