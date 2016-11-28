@@ -24,21 +24,21 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			printf("\n");
 		}
 	}
-	// if(k != 3){
-	// 	float currentWF = 0;
-	// 	float value = 0;
-	// 	for (ii = 0; ii < 3; ii++) {
-	// 		for (jj = 0; jj < 3; jj++) {
-	// 			currentWF = w[ii][jj];
-	// 			value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
-	// 		}
-	// 	}
-	// 	value = value > 255 ? 255 : value;
-	// 	value = value < 0 ? 0 : value;
-	// 	d_out[4*(width)*(i-1) + 4*(j-1) + k] = value;
-	// }else{
-	// 	d_out[4*(width)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
-	// }
+	if(k != 3){
+		float currentWF = 0;
+		float value = 0;
+		for (ii = 0; ii < 3; ii++) {
+			for (jj = 0; jj < 3; jj++) {
+				currentWF = w[ii][jj];
+				value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
+			}
+		}
+		value = value > 255 ? 255 : value;
+		value = value < 0 ? 0 : value;
+		d_out[4*(width)*(i-1) + 4*(j-1) + k] = value;
+	}else{
+		d_out[4*(width)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
+	}
 }
 
 
