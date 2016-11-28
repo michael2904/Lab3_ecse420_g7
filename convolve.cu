@@ -90,7 +90,7 @@ int process(char* input_filename, char* output_filename){
 		}
 		printf("\n");
 	}
-	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,w_d);
+	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,(float(*) [3])w_d);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
