@@ -12,7 +12,6 @@
 __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,int height,float w[3][3]){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	//int new_size = (width-2) * (height -2) * 4;
 	int i = ((ind) / ((width)*4))+1;
 	int j = ((ind/4) % (width))+1;
 	int k = (ind) % 4;
@@ -25,18 +24,13 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 				for (jj = 0; jj < 3; jj++) {
 					currentWF = w[ii][jj];
 					value += ((float) d_in[4*(width)*(i+ii-1) + 4*(j+jj-1) + k]) * currentWF;
-					if(ind >3952050)printf("Index %d (%d,%d) value at %f %f * %f\n",ind,ii,jj,value,(float)d_in[4*(width)*(i+ii-1) + 4*(j+jj-1) + k],currentWF);
 				}
 			}
-			if(ind >3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width)*(i) + 4*(j) + k],value);
 			if((value)<0) value = 0;
 			if((value)>255) value = 255;
-			if(ind > 3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width)*(i) + 4*(j) + k],value);
 			d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
 		}else if( k == 3){
-			if(ind > 3952050)printf("Old value at %d was %d and became %d\n",ind,d_in[4*(width)*(i) + 4*(j) + k],d_out[4*(width-2)*(i-1) + 4*(j-1) + 3]);
 			d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = 255;
-			if(ind > 3952050)printf("Old value at %d was %d and became %d\n",ind,d_in[4*(width)*(i) + 4*(j) + k],d_out[4*(width-2)*(i-1) + 4*(j-1) + 3]);
 		}
 	}
 }
@@ -83,13 +77,6 @@ int process(char* input_filename, char* output_filename){
 	dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 	dim3 dimBlock(BLOCK_WIDTH);
 
-	int ii,jj;
-	for (ii = 0; ii < 3; ii++) {
-		for (jj = 0; jj < 3; jj++) {
-			printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
-		}
-		printf("\n");
-	}
 	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,width,height,(float(*) [3])w_d);
 
 	// copy back the result array to the CPU
@@ -104,15 +91,6 @@ int process(char* input_filename, char* output_filename){
 
 	if (cudaGetLastError() != cudaSuccess) printf("kernel execution failed\n");
 
-	int i,idx,jdx,kdx;
-	for(i = 0; i<new_size;i++){
-		if(i>3951000){
-			idx = ((i) / (new_width*4))+1;
-			jdx = ((i/4) % (new_width))+1;
-			kdx = (i) % 4;
-			printf("%d-(%d,%d,%d):%d\n",i,idx,jdx,kdx,new_image[i]);
-		}
-	}
 	lodepng_encode32_file(output_filename, new_image, new_width, new_height);
 
 	free(image);
