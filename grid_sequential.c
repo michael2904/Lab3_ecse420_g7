@@ -8,8 +8,9 @@
 #define BOUNDARY_GAIN 0.75 // clamped edge vs free edge
 
 void print_grid(float **grid) {
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	int i,j;
+	for (i = 0; i < N; i++) {
+		for (j = 0; j < N; j++) {
 			printf("(%d,%d): %f ", i,j,grid[i][j]);
 		}
 		printf("\n");
@@ -25,11 +26,12 @@ int main(int argc, char** argv) {
 	float **u = malloc(N * sizeof(float *));
 	float **u1 = malloc(N * sizeof(float *));
 	float **u2 = malloc(N * sizeof(float *));
-	for (int i = 0; i < N; i++) {
+	int i,j;
+	for (i = 0; i < N; i++) {
 		u[i] = malloc(N * sizeof(float)); 
 		u1[i] = malloc(N * sizeof(float));
 		u2[i] = malloc(N * sizeof(float));
-		for (int j = 0; j < N; j++) {
+		for (j = 0; j < N; j++) {
 			u[i][j] = 0;
 			u1[i][j] = 0;
 			u2[i][j] = 0;
@@ -42,11 +44,13 @@ int main(int argc, char** argv) {
 	float *audio = malloc(T * sizeof(float));
 	float sum_of_neighbors, previous_value, previous_previous_value;
 	float **temp;
-	for (int t = 0; t < T; t++) {
+	int t;
+	for (t = 0; t < T; t++) {
 
 		// update interior points
-		for (int i = 1; i < N-1; i++) {
-			for (int j = 1; j < N-1; j++) {
+		int i,j;
+		for (i = 1; i < N-1; i++) {
+			for (j = 1; j < N-1; j++) {
 				sum_of_neighbors = u1[i-1][j] + u1[i+1][j] + u1[i][j-1] + u1[i][j+1];
 				previous_value = u1[i][j];
 				previous_previous_value = u2[i][j];
@@ -55,7 +59,7 @@ int main(int argc, char** argv) {
 		}
 
 		// update side points
-		for (int i = 1; i < N-1; i++) {
+		for (i = 1; i < N-1; i++) {
 			u[0][i] = BOUNDARY_GAIN * u[1][i]; // top
 			u[N-1][i] = BOUNDARY_GAIN * u[N-2][i]; // bottom
 			u[i][0] = BOUNDARY_GAIN * u[i][1]; // left
@@ -95,7 +99,7 @@ int main(int argc, char** argv) {
 	}
 
 	// free grid memory
-	for (int i = 0; i < N; i++) {
+	for (i = 0; i < N; i++) {
 		free(u[i]);
 		free(u1[i]);
 		free(u2[i]);
