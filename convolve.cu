@@ -79,7 +79,13 @@ int process(char* input_filename, char* output_filename){
 	dim3 dimGrid((new_size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 	dim3 dimBlock(BLOCK_WIDTH);
 
-
+	int ii,jj;
+	for (ii = 0; ii < 3; ii++) {
+		for (jj = 0; jj < 3; jj++) {
+			printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
+		}
+		printf("\n");
+	}
 	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,w);
 
 	// copy back the result array to the CPU
