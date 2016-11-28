@@ -7,7 +7,7 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void pool(int * d_out, unsigned char * d_in,int width){
+__global__ void pool(unsigned char * d_out, unsigned char * d_in,int width){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = (ind + width - 1)/width;
