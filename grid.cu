@@ -53,7 +53,7 @@ int process(int T){
 	printf("Size of grid: %d nodes\n", N*N);
 	// simulate drum strike
 	u1[N/2][N/2] = 1;
-	float *audio = malloc(T * sizeof(float));
+	float *audio = (float *) malloc(T * sizeof(float));
 	const int size = N * N * sizeof(float);
 
 	// declare GPU memory pointers
