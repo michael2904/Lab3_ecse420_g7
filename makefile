@@ -40,6 +40,12 @@ test_equality.o: test_equality.cu
 lodepng.o: lodepng.cu
 	$(CC)  -c lodepng.cu
 
+grid:  grid.o
+	$(CC) -o grid grid.o $(CFLAGS)
+
+grid.o: grid.cu
+	$(CC) -c grid.cu
+
 
 # To start over from scratch, type 'make clean'.  This
 # removes the executable file, as well as old .o object
