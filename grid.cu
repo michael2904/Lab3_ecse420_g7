@@ -166,7 +166,7 @@ int process(int T){
 		cudaError_t error4 = cudaGetLastError();
 		printf("kernel 2 execution failed: %s\n",cudaGetErrorString(error4));
 
-		printf(" Try printing %f\n",u[N/2][N/2]);
+		printf(" Try 99 printing %f\n",u[N/2][N/2]);
 		// update corners
 		u[0][0] = BOUNDARY_GAIN * u[1][0];
 		error0 = cudaGetLastError();
@@ -187,11 +187,13 @@ int process(int T){
 		error0 = cudaGetLastError();
 		printf("14 copy: %s\n",cudaGetErrorString(error0));
 		printf("%f,\n", audio[t]);
+		printf(" Try 15 printing %f\n",u[N/2][N/2]);
 
 		temp = u2;
 		u2 = u1;
 		u1 = u;
 		u = temp;
+		printf(" Try 16 printing %f\n",u[N/2][N/2]);
 
 		// record displacement at node (N-1,N-1)
 	}
