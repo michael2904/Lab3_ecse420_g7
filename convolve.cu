@@ -19,7 +19,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	if(ind == 0){
 		for (ii = 0; ii < 3; ii++) {
 			for (jj = 0; jj < 3; jj++) {
-				printf("w(%d,%d)=%f|",ii,jj,2.0);
+				printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
 			}
 			printf("\n");
 		}
@@ -93,6 +93,12 @@ int process(char* input_filename, char* output_filename){
 
 	cudaFree(d_in);
 	cudaFree(d_out);
+
+	if (cudaGetLastError() != cudaSuccess) printf("kernel launch failed\n");
+
+	cudaThreadSynchronize();
+
+	if (cudaGetLastError() != cudaSuccess) printf("kernel execution failed\n");
 
 	lodepng_encode32_file(output_filename, new_image, new_width, new_height);
 	int i,j,k;
