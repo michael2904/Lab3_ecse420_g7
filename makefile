@@ -8,7 +8,7 @@ CFLAGS  = -I. -lm
 #
 default: all
 
-all: test_equality rectify pool convolve
+all: test_equality rectify pool convolve grid
 
 # To create the executable file count we need the object files
 #
