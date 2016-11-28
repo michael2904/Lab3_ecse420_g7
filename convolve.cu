@@ -36,8 +36,8 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			}
 		}
 		if(ind >3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width-2)*(i) + 4*(j) + k],value);
-		if(((unsigned char)value)<0) value = 0;
-		if(((unsigned char)value)>255) value = 255;
+		if((value)<0) value = 0;
+		if((value)>255) value = 255;
 		if(ind > 3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width-2)*(i) + 4*(j) + k],value);
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
 	}else if( k == 3){
