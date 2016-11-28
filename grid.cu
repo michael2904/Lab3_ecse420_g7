@@ -79,14 +79,18 @@ int process(int T){
 
 	int t;
 	for (t = 0; t < T; t++) {
-		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
+		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
 
 		// allocate GPU memory
 		cudaMalloc((void**) &u1_in, size);
-		cudaMalloc((void**) &u2_in, size);
-		cudaMalloc((void**) &u_out, size);
 		cudaError_t error0 = cudaGetLastError();
 		printf("1st malloc: %s\n",cudaGetErrorString(error0));
+		cudaMalloc((void**) &u2_in, size);
+		cudaError_t error0 = cudaGetLastError();
+		printf("2nd malloc: %s\n",cudaGetErrorString(error0));
+		cudaMalloc((void**) &u_out, size);
+		error0 = cudaGetLastError();
+		printf("3rd malloc: %s\n",cudaGetErrorString(error0));
 
 		// transfer the array to the GPU
 		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
