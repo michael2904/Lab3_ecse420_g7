@@ -120,8 +120,20 @@ int process(int T){
 		error0 = cudaGetLastError();
 		printf("1st launch: %s\n",cudaGetErrorString(error0));
 
+		for (i = 0; i < 5; i++) {
+			for (j = 0; j < 5; j++) {
+				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[i][j],u1[i][j],u2[i][j]);
+			}
+		}
+
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
+
+		for (i = 0; i < 5; i++) {
+			for (j = 0; j < 5; j++) {
+				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[i][j],u1[i][j],u2[i][j]);
+			}
+		}
 
 		error0 = cudaGetLastError();
 		printf("2n copy: %s\n",cudaGetErrorString(error0));
