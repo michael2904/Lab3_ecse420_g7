@@ -8,7 +8,7 @@ CFLAGS  = -I. -lm
 #
 default: all
 
-all: test_equality rectify pool convolve grid
+all: test_equality rectify pool convolve grid grid_sequential
 
 # To create the executable file count we need the object files
 #
@@ -45,6 +45,12 @@ grid:  grid.o
 
 grid.o: grid.cu
 	$(CC) -c grid.cu
+
+grid_sequential:  grid_sequential.o
+	$(CC) -o grid_sequential grid_sequential.o $(CFLAGS)
+
+grid_sequential.o: grid_sequential.cu
+	$(CC) -c grid_sequential.cu
 
 
 # To start over from scratch, type 'make clean'.  This
