@@ -108,8 +108,15 @@ int process(char* input_filename, char* output_filename){
 
 	if (cudaGetLastError() != cudaSuccess) printf("kernel execution failed\n");
 
-	lodepng_encode32_file(output_filename, new_image, new_width, new_height);
 	int i,j,k;
+	for(i = 0; i<new_size;i++){
+		if(i>3951000){
+			int idx = ((i) / (new_width*4))+1;
+			int jdx = ((i/4) % (new_width))+1;
+			int kdx = (i) % 4;
+			printf("%d-(%d,%d,%d):%d\n",i,idx,jdx,kdx,new_image[i]);
+		}
+	}
 	for(i = 0; i<8;i++){
 		for(j = 0;j<8;j++){
 			printf("(%d,%d,%d):",i,j,k);
@@ -126,14 +133,7 @@ int process(char* input_filename, char* output_filename){
 		}
 		printf("\n");
 	}
-	for(i = 0; i<new_size;i++){
-		if(i>3951000){
-			int idx = ((i) / (new_width*4))+1;
-			int jdx = ((i/4) % (new_width))+1;
-			int kdx = (i) % 4;
-			printf("%d-(%d,%d,%d):%d\n",i,idx,jdx,kdx,new_image[i]);
-		}
-	}
+	lodepng_encode32_file(output_filename, new_image, new_width, new_height);
 
 	free(image);
 	free(new_image);
