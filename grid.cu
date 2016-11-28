@@ -16,6 +16,8 @@ __global__ void grid_N_First_Step(float u_out[N][N], float u1_in[N][N],float u2_
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = ((ind) / ((N)))+1;
 	int j = ((ind) % (N))+1;
+	if(i == N/2 && j == N/2)printf("Try (%d,%d) printing %f %f\n",i,j,u1_in[N/2][N/2],u2_in[N/2][N/2]);
+	if(i< 4 && j<4){printf("Try 2 (%d,%d) printing %f %f\n",i,j,u1_in[N/2][N/2],u2_in[N/2][N/2]);
 	if(i< N-1 && j<N-1){
 		//do work
 		// float sum_of_neighbors, previous_value, previous_previous_value;
@@ -87,7 +89,7 @@ int process(int T){
 	int t;
 	for (t = 0; t < T; t++) {
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
-		printf(" Try printing %f\n",u[N/2][N/2]);
+		printf("Try printing %f %f %f\n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2]);
 		for (i = 0; i < 5; i++) {
 			for (j = 0; j < 5; j++) {
 				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[i][j],u1[i][j],u2[i][j]);
