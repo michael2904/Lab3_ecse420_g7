@@ -9,7 +9,7 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,int height,float * [3] w){
+__global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,int height,float w[3][3]){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = ((ind) / (width*4))+1;
@@ -86,7 +86,7 @@ int process(char* input_filename, char* output_filename){
 		}
 		printf("\n");
 	}
-	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,w);
+	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,(float(*) [3])w);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
