@@ -79,6 +79,7 @@ int process(int T){
 
 	int t;
 	for (t = 0; t < T; t++) {
+		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 		// allocate GPU memory
 		cudaMalloc((void**) &u1_in, size);
@@ -93,9 +94,6 @@ int process(int T){
 
 		error0 = cudaGetLastError();
 		if (error0 != cudaSuccess) printf("1st copy: %s\n",cudaGetErrorString(error0));
-
-
-		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d\n",t,size,N,N, (size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 		// launch the kernel
 		dim3 dimGrid(((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
