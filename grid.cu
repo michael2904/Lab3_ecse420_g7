@@ -88,6 +88,11 @@ int process(int T){
 	for (t = 0; t < T; t++) {
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
 		printf(" Try printing %f\n",u[N/2][N/2]);
+		for (i = 0; i < 5; i++) {
+			for (j = 0; j < 5; j++) {
+				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[i][j],u1[i][j],u2[i][j]);
+			}
+		}
 		// allocate GPU memory
 		cudaMalloc((void**) &u1_in, size);
 		cudaError_t error0 = cudaGetLastError();
