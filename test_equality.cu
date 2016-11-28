@@ -21,12 +21,15 @@ float get_MSE(char* input_filename_1, char* input_filename_2)
   // process image
   float im1, im2, diff, sum, MSE;
   sum = 0;
-  int i;
+  int i,idx,jdx,kdx;
   for (i = 0; i < width1 * height1 * 4; i++) {
     im1 = (float)image1[i];
     im2 = (float)image2[i];
     if (image1[i] - image2[i] != 0){
-      printf("These are the two values: %d - %d at %d / %d\n",image1[i],image2[i],i,i%4);
+      idx = ((ind) / ((width)*4))+1;
+      jdx = ((ind/4) % (width))+1;
+      kdx = (ind) % 4;
+      printf("These are the two values: %d - %d at %d / (%d,%d,%d)\n",image1[i],image2[i],i,idx,jdx,kdx);
     }
     diff = im1 - im2;
     sum += diff * diff;
