@@ -88,6 +88,10 @@ int process(int T){
 		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
 		cudaMemcpy(u2_in, u2, size, cudaMemcpyHostToDevice);
 
+		cudaError_t error0 = cudaGetLastError();
+		if (error0 != cudaSuccess) printf("1st copy: %s\n",cudaGetErrorString(error0));
+
+
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d\n",t,size,N,N, (size+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH);
 
 		// launch the kernel
@@ -95,16 +99,22 @@ int process(int T){
 		dim3 dimBlock(BLOCK_WIDTH);
 
 		grid_N_First_Step<<<dimGrid, dimBlock>>>((float(*) [N])u_out,(float(*) [N]) u1_in,(float(*) [N])u2_in);
+		
+		error0 = cudaGetLastError();
+		if (error0 != cudaSuccess) printf("1st copy: %s\n",cudaGetErrorString(error0));
 
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
+
+		error0 = cudaGetLastError();
+		if (error0 != cudaSuccess) printf("1st copy: %s\n",cudaGetErrorString(error0));
 
 		cudaFree(u2_in);
 		cudaFree(u1_in);
 		cudaFree(u_out);
 
 		cudaError_t error1 = cudaGetLastError();
-		if (error1 != cudaSuccess) printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error1));
+		if (error1 != cudaSuccess) printf("kernel 1 launch failed: %s\n",cudaGetErrorString(error1));
 
 
 		cudaThreadSynchronize();
