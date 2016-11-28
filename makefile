@@ -8,7 +8,7 @@ CFLAGS  = -I. -lm
 #
 default: all
 
-all: test_equality rectify pool
+all: test_equality rectify pool convolve
 
 # To create the executable file count we need the object files
 #
@@ -24,6 +24,12 @@ rectify:  rectify.o lodepng.o
 
 rectify.o: rectify.cu
 	$(CC) -c rectify.cu
+
+convolve:  convolve.o lodepng.o
+	$(CC) -o convolve convolve.o lodepng.o $(CFLAGS)
+
+convolve.o: convolve.cu
+	$(CC) -c convolve.cu
 
 test_equality:  test_equality.o lodepng.o
 	$(CC) -o test_equality test_equality.o lodepng.o $(CFLAGS)
