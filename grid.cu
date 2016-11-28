@@ -221,10 +221,10 @@ int process(int T){
 	cudaFree(u1_in);
 	cudaFree(u_in);
 	cudaError_t error5 = cudaGetLastError();
-	printf("8 free: %s\n",cudaGetErrorString(error0));
+	printf("8 free: %s\n",cudaGetErrorString(error5));
 	cudaFree(u_out);
 	error5 = cudaGetLastError();
-	printf("9 free: %s\n",cudaGetErrorString(error0));
+	printf("9 free: %s\n",cudaGetErrorString(error5));
 
 	// free grid memory
 	for (i = 0; i < N; i++) {
