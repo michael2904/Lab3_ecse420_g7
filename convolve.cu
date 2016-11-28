@@ -131,7 +131,7 @@ int process(char* input_filename, char* output_filename){
 			int idx = ((i) / (new_width*4))+1;
 			int jdx = ((i/4) % (new_width))+1;
 			int kdx = (i) % 4;
-			printf("%d-(%d,%d,%d):%d",i,idx,jdx,kdx,new_image[i]);
+			printf("%d-(%d,%d,%d):%d\n",i,idx,jdx,kdx,new_image[i]);
 		}
 	}
 
