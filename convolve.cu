@@ -33,7 +33,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 				value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
 				if(ind>3952120)printf("w(%d,%d)=%f|value : %d|",ii,jj,w[ii][jj],value);
 			}
-			printf("\n");
+			if(ind>3952120)printf("\n");
 		}
 		if(ind>3952120)printf("\nind %d value : %d\n",ind,value);
 		value = value > 255 ? 255 : value;
