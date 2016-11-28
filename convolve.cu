@@ -126,6 +126,14 @@ int process(char* input_filename, char* output_filename){
 		}
 		printf("\n");
 	}
+	for(i = 0; i<new_size;i++){
+		if(i>3951900){
+			int idx = ((i) / (new_width*4))+1;
+			int jdx = ((i/4) % (new_width))+1;
+			int kdx = (i) % 4;
+			printf("%d-(%d,%d,%d):%d",i,idx,jdx,kdx,new_image[i]);
+		}
+	}
 
 	free(image);
 	free(new_image);
