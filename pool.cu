@@ -16,7 +16,7 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 	int size = width * height * 4;
 
 
-	if(ind == 0)printf("This is the size %d",size);
+	if(ind == 0)printf("This is the size %d\n",size);
 	unsigned char max;
 	int new_width = (width)/2;
 	if(j%2 == 0 && k != 3 && ind < size){
