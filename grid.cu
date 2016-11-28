@@ -83,6 +83,7 @@ int process(int T){
 		// allocate GPU memory
 		cudaMalloc((void**) &u1_in, size);
 		cudaMalloc((void**) &u2_in, size);
+		cudaMalloc((void**) &u_out, size);
 		cudaError_t error0 = cudaGetLastError();
 		if (error0 != cudaSuccess) printf("1st malloc: %s\n",cudaGetErrorString(error0));
 
@@ -128,6 +129,7 @@ int process(int T){
 
 		// allocate GPU memory
 		cudaMalloc(&u_in, size);
+		cudaMalloc(&u_out, size);
 
 		// transfer the array to the GPU
 		cudaMemcpy(u_in, u, size, cudaMemcpyHostToDevice);
