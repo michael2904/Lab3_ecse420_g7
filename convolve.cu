@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "wm.h"
-#define MAX_MSE 0.00001f
 
 
 #define BLOCK_WIDTH 512
@@ -20,7 +19,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	if(ind == 0){
 		for (ii = 0; ii < 3; ii++) {
 			for (jj = 0; jj < 3; jj++) {
-				printf("ind %d w(%d,%d)=%f|",ind,ii,jj,w[ii][jj]);
+				printf("w(%d,%d)=%f|",ii,jj,w[ii][jj]);
 			}
 			printf("\n");
 		}
@@ -32,37 +31,27 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			for (jj = 0; jj < 3; jj++) {
 				currentWF = w[ii][jj];
 				value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
-				if(ind>3952120)printf("ind %d w(%d,%d)=%f|value : %f|\n",ind,ii,jj,w[ii][jj],value);
 			}
-			if(ind>3952120)printf("\n");
 		}
-		if(ind>3952120)printf("\nind %d value : %f\n",ind,value);
 		value = value > 255 ? 255 : value;
 		value = value < 0 ? 0 : value;
-		if(ind>3952120)printf("\nind %d value : %f\n",ind,value);
-		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
+		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = value;
 	}else{
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
 	}
 }
 
 
-int process(char* input_filename, char* output_filename,char* test_filename){
-	unsigned error,error2;
-	unsigned char *image, *new_image, *test_image;
+int process(char* input_filename, char* output_filename){
+	unsigned error;
+	unsigned char *image, *new_image;
 	unsigned width, height;
 	unsigned new_width, new_height;
-	unsigned t_width, t_height;
 
 	error = lodepng_decode32_file(&image, &width, &height, input_filename);
 	if(error){
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 		return error;
-	}
-	error2 = lodepng_decode32_file(&test_image, &t_width, &t_height, test_filename);
-	if(error2){
-		printf("error %u: %s\n", error2, lodepng_error_text(error2));
-		return error2;
 	}
 	new_width = (width)-2;
 	new_height = (height)-2;
@@ -133,28 +122,6 @@ int process(char* input_filename, char* output_filename,char* test_filename){
 		}
 		printf("\n");
 	}
-	if(new_width != t_width) printf("images do not have same width\n");
-  	if(new_height != t_height) printf("images do not have same height\n");
-
-  	// process image
-	float im1, im2, diff, sum, MSE;
-	sum = 0;
-	for (i = 0; i < new_size; i++) {
-		im1 = (float)new_image[i];
-		im2 = (float)test_image[i];
-		if (new_image[i] - test_image[i] != 0){
-			printf("These are the two values: %d - %d at %d / %d\n",new_image[i],test_image[i],i,i%4);
-		}
-		diff = im1 - im2;
-		sum += diff * diff;
-	}
-
-	MSE = sqrt(sum) / (new_width * new_height);
-	if (MSE < MAX_MSE) {
-		printf("Images are equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
-	} else {
-		printf("Images are NOT equal (MSE = %f, MAX_MSE = %f)\n",MSE,MAX_MSE);
-	}
 
 	free(image);
 	free(new_image);
@@ -162,12 +129,11 @@ int process(char* input_filename, char* output_filename,char* test_filename){
 }
 
 int main(int argc, char *argv[]){
-	if ( argc >= 4 ){
+	if ( argc >= 3 ){
 		char* input_filename = argv[1];
 		char* output_filename = argv[2];
-		char* test_filename = argv[3];
 
-		int error = process(input_filename, output_filename,test_filename);
+		int error = process(input_filename, output_filename);
 
 		if(error != 0){
 			printf("An error occured. ( %d )\n",error);
