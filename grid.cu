@@ -62,6 +62,9 @@ int process(int T){
 			u2[i][j] = 0;
 		}
 	}
+	u[2][2] = 4;
+	u1[1][1] = 2;
+	u2[3][3] = 3;
 	for (i = 0; i < 5; i++) {
 		for (j = 0; j < 5; j++) {
 			printf("Try printing (%d,%d) %f %f %f\n",i,j,u[i][j],u1[i][j],u2[i][j]);
