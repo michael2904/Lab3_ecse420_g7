@@ -1,7 +1,6 @@
 // Code adapted from MATLAB implementation at https://people.ece.cornell.edu/land/courses/ece5760/LABS/s2016/lab3.html
 #include <stdio.h>
 #include <stdlib.h>
-#include "output.h"
 #define N 512 // grid side length
 #define RHO 0.5 // related to pitch
 #define ETA 2e-4 // related to duration of sound
