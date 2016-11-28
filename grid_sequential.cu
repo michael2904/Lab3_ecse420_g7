@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 
 	// simulate drum strike
 	u1[N/2][N/2] = 1;
-	float *audio = malloc(T * sizeof(float));
+	float *audio = (float *)malloc(T * sizeof(float));
 	float sum_of_neighbors, previous_value, previous_previous_value;
 	float **temp;
 	int t;
