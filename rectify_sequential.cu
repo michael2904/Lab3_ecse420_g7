@@ -14,7 +14,6 @@ void process(char* input_filename, char* output_filename)
   new_image =(unsigned char *) malloc(width * height * 4 * sizeof(unsigned char));
 
   // rectify image
-  unsigned char value;
   int i,j,k;
   for (i = 0; i < height; i++) {
     for (j = 0; j < width; j++) {
