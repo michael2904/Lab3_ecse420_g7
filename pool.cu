@@ -7,17 +7,20 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void pool(unsigned char * d_out, unsigned char * d_in,int width){
+__global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int height){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = (ind + width - 1)/width;
 	int j = (ind % width);
 	int k = (ind % 4);
+	int size = width * height * 4;
 
 	if(ind<2000) {
 		printf("ind: %05d and width is %d : (%d,%d,%d)\n",ind,width,i,j,k);
 	}
-	if((j % 100 == 0 )&&(i % 100 == 0))printf("Original max for ind = %010d at (%d,%d,%d)\n",ind,i,j,k);
+	if((j % 100 == 0 )&&(i % 100 == 0) && ind < size){
+		printf("Original max for ind: %010d at (%04d,%04d,%04d)\n",ind,i,j,k);
+	}
 
 
 	//unsigned char max;
@@ -78,7 +81,7 @@ int process(char* input_filename, char* output_filename){
 	dim3 dimBlock(BLOCK_WIDTH);
 
 
-	pool<<<dimGrid, dimBlock>>>(d_out, d_in,width);
+	pool<<<dimGrid, dimBlock>>>(d_out, d_in,width,height);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
