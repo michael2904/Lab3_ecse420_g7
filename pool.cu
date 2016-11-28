@@ -85,13 +85,15 @@ int process(char* input_filename, char* output_filename){
 	cudaFree(d_out);
 
 	lodepng_encode32_file(output_filename, new_image, new_width, new_height);
-	int i,j;
+	int i,j,k;
 	for(i = 0; i<10;i++){
 		for(j = 0;j<10;j++){
 			for(k = 0;k<4;k++){
-				printf("(%d,%d,%d):%d",i,j,k,image[4*width*i + 4*j + k]),
+				printf("(%d,%d,%d):%d",i,j,k,image[4*width*i + 4*j + k]);
 			}
+			printf(" | ");
 		}
+		printf("\n");
 	}
 	for(i = 0; i<10;i++){
 		for(j = 0;j<10;j++){
