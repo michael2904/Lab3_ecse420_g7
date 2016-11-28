@@ -15,7 +15,6 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 	int i = ((ind) / (width*4))+1;
 	int j = ((ind/4) % (width))+1;
 	int k = (ind) % 4;
-	unsigned char max;
 	if(k != 3){
 		float currentWF = 0;
 		float value = 0;
@@ -73,7 +72,7 @@ int process(char* input_filename, char* output_filename){
 	dim3 dimBlock(BLOCK_WIDTH);
 
 
-	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height);
+	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,w);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
