@@ -12,7 +12,7 @@ void process(char* input_filename, char* output_filename)
 
   error = lodepng_decode32_file(&image, &width, &height, input_filename);
   if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
-  new_image = malloc(width * height * 4 * sizeof(unsigned char));
+  new_image =(unsigned char *) malloc(width * height * 4 * sizeof(unsigned char));
 
   // convolve image
   int i,j,k,ii,jj;

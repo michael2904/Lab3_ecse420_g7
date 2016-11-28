@@ -11,7 +11,7 @@ void process(char* input_filename, char* output_filename)
 
   error = lodepng_decode32_file(&image, &width, &height, input_filename);
   if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
-  new_image = malloc(width * height * sizeof(unsigned char) * 2);
+  new_image = (unsigned char *)malloc(width * height * sizeof(unsigned char) * 2);
 
   // pool image
   unsigned char max_val;
