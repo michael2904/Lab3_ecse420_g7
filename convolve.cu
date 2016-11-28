@@ -25,7 +25,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			printf("\n");
 		}
 	}
-	if(k != 3 && ind < size){
+	if(k != 3){
 		float currentWF = 0;
 		float value = 0;
 		for (ii = 0; ii < 3; ii++) {
@@ -40,7 +40,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 		if(value>255) value = 255;
 		if(ind > 3952050)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width)*(i) + 4*(j) + k],value);
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
-	}else if( k == 3 && ind < size){
+	}else if( k == 3){
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
 	}
 }
