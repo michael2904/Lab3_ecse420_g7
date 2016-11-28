@@ -190,13 +190,13 @@ int process(int T){
 		printf(" Try 15 printing %f\n",u[N/2][N/2]);
 
 		temp = u2;
-		printf(" Try 161 printing %f\n",u[N/2][N/2]);
+		printf("Try 161 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
 		u2 = u1;
-		printf(" Try 162 printing %f\n",u[N/2][N/2]);
+		printf("Try 162 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
 		u1 = u;
-		printf(" Try 163 printing %f\n",u[N/2][N/2]);
+		printf("Try 163 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
 		u = temp;
-		printf(" Try 164 printing %f\n",u[N/2][N/2]);
+		printf("Try 164 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
 
 		// record displacement at node (N-1,N-1)
 	}
