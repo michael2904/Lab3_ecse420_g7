@@ -35,9 +35,9 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 		}
 		value = value > 255 ? 255 : value;
 		value = value < 0 ? 0 : value;
-		d_out[4*(width)*(i-1) + 4*(j-1) + k] = value;
+		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = value;
 	}else{
-		d_out[4*(width)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
+		d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
 	}
 }
 
@@ -90,7 +90,7 @@ int process(char* input_filename, char* output_filename){
 		}
 		printf("\n");
 	}
-	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,new_width,new_height,(float(*) [3])w_d);
+	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,width,height,(float(*) [3])w_d);
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
