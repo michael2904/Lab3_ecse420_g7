@@ -59,7 +59,7 @@ int process(char* input_filename, char* output_filename){
 	// declare GPU memory pointers
 	unsigned char * d_in;
 	unsigned char * d_out;
-	float *w_d = 0;
+	float *w_d;
 
 	// allocate GPU memory
 	cudaMalloc(&d_in, size);

@@ -69,10 +69,10 @@ int process(int T){
 	const int size = N * N * sizeof(float);
 
 	// declare GPU memory pointers
-	float * u1_in;
-	float * u2_in;
-	float * u_in;
-	float * u_out;
+	float ** u1_in;
+	float ** u2_in;
+	float ** u_in;
+	float ** u_out;
 
 	float **temp;
 
