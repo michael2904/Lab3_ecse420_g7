@@ -25,17 +25,17 @@ __global__ void pool(unsigned char * d_out, unsigned char * d_in,int width,int h
 
 	unsigned char max;
 	int new_width = (width+1)/2;
-	if(j%2 == 0 && k != 3){
+	if(j%2 == 0 && k != 3 && ind < size){
 		max = d_in[4*width*i + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*j + k]>max) max = d_in[4*width*(i+1) + 4*j + k];
 		if(d_in[4*width*(i+1) + 4*(j+1) + k]>max) max = d_in[4*width*(i+1) + 4*(j+1) + k];
 		if(d_in[4*width*i + 4*(j+1) + k]>max) max = d_in[4*width*i + 4*(j+1) + k];
 		d_out[new_width*i + j*2 + k] = max;
-		if(j < 10 )printf("Original for ind = %d max %d at (%d,%d,%d)\n",ind,max,i,j,k);
+		//if(j < 10 )printf("Original for ind = %d max %d at (%d,%d,%d)\n",ind,max,i,j,k);
 	}
-	if(j % 2 == 0 && k == 3){
+	if(j % 2 == 0 && k == 3 && ind < size){
 		d_out[new_width * i + j*2 + 3] = d_in[4*width*i + 4*j + 3];
-		if(j < 10 )printf("Original for ind = %d max %d at (%d,%d,%d)\n",ind,max,i,j,k);
+		//if(j < 10 )printf("Original for ind = %d max %d at (%d,%d,%d)\n",ind,max,i,j,k);
 	}
 }
 
@@ -89,7 +89,7 @@ int process(char* input_filename, char* output_filename){
 	cudaFree(d_in);
 	cudaFree(d_out);
 
-	//lodepng_encode32_file(output_filename, new_image, width, height);
+	lodepng_encode32_file(output_filename, new_image, width, height);
 	//int i;
 	//for(i = 0; i<128;i++)printf("new_image[%d] = %d\n",i,new_image[i]);
 
