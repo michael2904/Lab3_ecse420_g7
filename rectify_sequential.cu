@@ -2,7 +2,6 @@
 #include "lodepng.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "wm.h"
 
 void process(char* input_filename, char* output_filename)
 {
@@ -14,27 +13,21 @@ void process(char* input_filename, char* output_filename)
   if(error) printf("error %u: %s\n", error, lodepng_error_text(error));
   new_image = malloc(width * height * 4 * sizeof(unsigned char));
 
-  // convolve image
-  int i;
-  float value;
-  for (i = 1; i < height-1; i++) {
-    for (int j = 1; j < width-1; j++) {	
-      for (int k = 0; k < 3; k++) {
-        value = 0;
-        for (int ii = 0; ii < 3; ii++) {
-          for (int jj = 0; jj < 3; jj++) {
-            value += image[4*width*(i+ii-1) + 4*(j+jj-1) + k] * w[ii][jj];
-          }
-        }
-        value = value > 255 ? 255 : value;
-        value = value < 0 ? 0 : value;
-        new_image[4*(width-2)*(i-1) + 4*(j-1) + k] = value;
+  // rectify image
+  unsigned char value;
+  int i,j,k;
+  for (i = 0; i < height; i++) {
+    for (j = 0; j < width; j++) {
+      for (k = 0; k < 1000; k++) {
+  	    new_image[4*width*i + 4*j + 0] = image[4*width*i + 4*j + 0] < 127 ? 127 : image[4*width*i + 4*j + 0]; // R
+  	    new_image[4*width*i + 4*j + 1] = image[4*width*i + 4*j + 1] < 127 ? 127 : image[4*width*i + 4*j + 1]; // G
+  	    new_image[4*width*i + 4*j + 2] = image[4*width*i + 4*j + 2] < 127 ? 127 : image[4*width*i + 4*j + 2]; // B
+  	    new_image[4*width*i + 4*j + 3] = image[4*width*i + 4*j + 3]; // A
       }
-      new_image[4*(width-2)*(i-1) + 4*(j-1) + 3] = image[4*width*i + 4*j + 3]; // A
     }
   }
 
-  lodepng_encode32_file(output_filename, new_image, width-2, height-2);
+  lodepng_encode32_file(output_filename, new_image, width, height);
 
   free(image);
   free(new_image);
