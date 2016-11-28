@@ -19,14 +19,14 @@ __global__ void grid_N_First_Step(float u_out[N][N], float u1_in[N][N],float u2_
 	if(i< N-1 && j<N-1){
 		//do work
 		float sum_of_neighbors, previous_value, previous_previous_value;
-		sum_of_neighbors = u1[i-1][j] + u1[i+1][j] + u1[i][j-1] + u1[i][j+1];
-		previous_value = u1[i][j];
-		previous_previous_value = u2[i][j];
-		u[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
+		sum_of_neighbors = u1_in[i-1][j] + u1_in[i+1][j] + u1_in[i][j-1] + u1_in[i][j+1];
+		previous_value = u1_in[i][j];
+		previous_previous_value = u2_in[i][j];
+		u_out[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 	}
 }
 
-__global__ void grid_N_Second_Step(float u_out[N][N], float u1_in[N][N],float u2_in[N][N]){
+__global__ void grid_N_Second_Step(float u_out[N][N], float u_in[N][N]){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = ((ind) / ((N)))+1;
@@ -34,13 +34,13 @@ __global__ void grid_N_Second_Step(float u_out[N][N], float u1_in[N][N],float u2
 	if(i< N-1 && j == 0){
 		//do work
 		if(j == 0){
-			u[0][i] = BOUNDARY_GAIN * u[1][i]; // top
+			u_out[0][i] = BOUNDARY_GAIN * u_in[1][i]; // top
 		}else if(j == 1){
-			u[N-1][i] = BOUNDARY_GAIN * u[N-2][i]; // bottom
+			u_out[N-1][i] = BOUNDARY_GAIN * u_in[N-2][i]; // bottom
 		}else if(j == 2){
-			u[i][0] = BOUNDARY_GAIN * u[i][1]; // left
+			u_out[i][0] = BOUNDARY_GAIN * u_in[i][1]; // left
 		}else if(j == 3){
-			u[i][N-1] = BOUNDARY_GAIN * u[i][N-2]; // right
+			u_out[i][N-1] = BOUNDARY_GAIN * u_in[i][N-2]; // right
 		}
 	}
 }
@@ -71,6 +71,7 @@ int process(int T){
 	// declare GPU memory pointers
 	float * u1_in;
 	float * u2_in;
+	float * u_in;
 	float * u_out;
 
 	float **temp;
@@ -111,24 +112,21 @@ int process(int T){
 		// second step
 
 		// allocate GPU memory
-		cudaMalloc(&u1_in, size);
-		cudaMalloc(&u2_in, size);
+		cudaMalloc(&u_in, size);
 
 		// transfer the array to the GPU
-		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
-		cudaMemcpy(u2_in, u2, size, cudaMemcpyHostToDevice);
+		cudaMemcpy(u_in, u, size, cudaMemcpyHostToDevice);
 
 		// // launch the kernel
 		// dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 		// dim3 dimBlock(BLOCK_WIDTH);
 
-		grid_N_Second_Step<<<dimGrid, dimBlock>>>((float(*) [N])u_out,(float(*) [N]) u1_in,(float(*) [N])u2_in);
+		grid_N_Second_Step<<<dimGrid, dimBlock>>>((float(*) [N])u_out,(float(*) [N]) u_in);
 
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
 
-		cudaFree(u2_in);
-		cudaFree(u1_in);
+		cudaFree(u_in);
 		cudaFree(u_out);
 
 		if (cudaGetLastError() != cudaSuccess) printf("kernel 1 launch failed\n");
