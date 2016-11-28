@@ -32,7 +32,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			for (jj = 0; jj < 3; jj++) {
 				currentWF = w[ii][jj];
 				value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
-				if(ind >3952100)printf("Index %d value at %f %d * %f\n",ind,value,d_in[4*(width)*(i) + 4*(j) + k],currentWF);
+				if(ind >3952100)printf("Index %d (%d,%d) value at %f %d * %f\n",ind,ii,jj,value,d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k],currentWF);
 			}
 		}
 		if(ind >3952100)printf("Old value at %d was %d and became %f\n",ind,d_in[4*(width)*(i) + 4*(j) + k],value);
