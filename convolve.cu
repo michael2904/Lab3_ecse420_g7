@@ -31,14 +31,14 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 			for (jj = 0; jj < 3; jj++) {
 				currentWF = w[ii][jj];
 				value += d_in[4*width*(i+ii-1) + 4*(j+jj-1) + k] * currentWF;
-				if(ind>3952120)printf("w(%d,%d)=%f|value : %d|",ii,jj,w[ii][jj],value);
+				if(ind>3952120)printf("w(%d,%d)=%f|value : %f|",ii,jj,w[ii][jj],value);
 			}
 			if(ind>3952120)printf("\n");
 		}
-		if(ind>3952120)printf("\nind %d value : %d\n",ind,value);
+		if(ind>3952120)printf("\nind %d value : %f\n",ind,value);
 		value = value > 255 ? 255 : value;
 		value = value < 0 ? 0 : value;
-		if(ind>3952120)printf("\nind %d value : %d\n",ind,value);
+		if(ind>3952120)printf("\nind %d value : %f\n",ind,value);
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + k] = (unsigned char) value;
 	}else{
 		d_out[4*(width-2)*(i-1) + 4*(j-1) + 3] = d_in[4*width*i + 4*j + 3]; // A
