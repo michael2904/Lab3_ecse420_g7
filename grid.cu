@@ -17,7 +17,7 @@ __global__ void grid_N_First_Step(float u_out[N][N], float u1_in[N][N],float u2_
 	int i = ((ind) / ((N)))+1;
 	int j = ((ind) % (N))+1;
 	if(i == N/2 && j == N/2)printf("Try (%d,%d) printing %f %f\n",i,j,u1_in[N/2][N/2],u2_in[N/2][N/2]);
-	if(i< 4 && j<4){printf("Try 2 (%d,%d) printing %f %f\n",i,j,u1_in[N/2][N/2],u2_in[N/2][N/2]);
+	if(i< 4 && j<4)printf("Try 2 (%d,%d) printing %f %f\n",i,j,u1_in[N/2][N/2],u2_in[N/2][N/2]);
 	if(i< N-1 && j<N-1){
 		//do work
 		// float sum_of_neighbors, previous_value, previous_previous_value;
