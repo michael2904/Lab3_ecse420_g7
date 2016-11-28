@@ -12,7 +12,7 @@
 __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,int height,float w[3][3]){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	int new_size = (width-2) * (height -2) * 4;
+	//int new_size = (width-2) * (height -2) * 4;
 	int i = ((ind) / ((width)*4))+1;
 	int j = ((ind/4) % (width))+1;
 	int k = (ind) % 4;
@@ -20,6 +20,7 @@ __global__ void convolve(unsigned char * d_out, unsigned char * d_in,int width,i
 		if(k != 3){
 			float currentWF = 0;
 			float value = 0;
+			int ii,jj;
 			for (ii = 0; ii < 3; ii++) {
 				for (jj = 0; jj < 3; jj++) {
 					currentWF = w[ii][jj];
