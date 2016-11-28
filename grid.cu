@@ -164,7 +164,7 @@ int process(int T){
 		cudaThreadSynchronize();
 		cudaError_t error4 = cudaGetLastError();
 		printf("kernel 2 execution failed: %s\n",cudaGetErrorString(error4));
-		printf("Try 162 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
+		printf("Try 162 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],u[N/2][N/2]);
 
 		printf(" Try 99 printing %f\n",u[N/2][N/2]);
 		// update corners
