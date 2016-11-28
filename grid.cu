@@ -73,8 +73,7 @@ int process(int T){
 	float ** u2_in;
 	float ** u_in;
 	float ** u_out;
-
-	float **temp;
+	float ** temp;
 
 
 	int t;
@@ -187,10 +186,9 @@ int process(int T){
 		error0 = cudaGetLastError();
 		printf("14 copy: %s\n",cudaGetErrorString(error0));
 		printf("%f,\n", audio[t]);
-		printf(" Try 15 printing %f\n",u[N/2][N/2]);
-
+		printf("Try 15 printing %f\n",u[N*N/2]);
 		temp = u2;
-		printf("Try 161 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
+		printf("Try 161 printing %f %f %f %f \n",u2[N/2][N/2],u2[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
 		u2 = u1;
 		printf("Try 162 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
 		u1 = u;
