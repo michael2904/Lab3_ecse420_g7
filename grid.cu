@@ -138,10 +138,6 @@ int process(int T){
 		error0 = cudaGetLastError();
 		printf("2n copy: %s\n",cudaGetErrorString(error0));
 
-		cudaFree(u2_in);
-		cudaFree(u1_in);
-		cudaFree(u_out);
-
 		cudaError_t error1 = cudaGetLastError();
 		printf("kernel 1 launch failed: %s\n",cudaGetErrorString(error1));
 
@@ -163,9 +159,7 @@ int process(int T){
 		cudaMalloc(&u_in, size);
 		error0 = cudaGetLastError();
 		printf("3rd malloc: %s\n",cudaGetErrorString(error0));
-		cudaMalloc(&u_out, size);
-		error0 = cudaGetLastError();
-		printf("4 malloc: %s\n",cudaGetErrorString(error0));
+
 		// transfer the array to the GPU
 		cudaMemcpy(u_in, u, size, cudaMemcpyHostToDevice);
 		error0 = cudaGetLastError();
@@ -183,12 +177,6 @@ int process(int T){
 		error0 = cudaGetLastError();
 		printf("7 copy: %s\n",cudaGetErrorString(error0));
 
-		cudaFree(u_in);
-		error0 = cudaGetLastError();
-		printf("8 free: %s\n",cudaGetErrorString(error0));
-		cudaFree(u_out);
-		error0 = cudaGetLastError();
-		printf("9 free: %s\n",cudaGetErrorString(error0));
 		cudaError_t error3 = cudaGetLastError();
 		printf("kernel 2 launch failed: %s\n",cudaGetErrorString(error3));
 
@@ -228,6 +216,15 @@ int process(int T){
 		u = temp;
 		printf("Try 164 printing %f %f %f %f \n",u[N/2][N/2],u1[N/2][N/2],u2[N/2][N/2],temp[N/2][N/2]);
 	}
+
+	cudaFree(u2_in);
+	cudaFree(u1_in);
+	cudaFree(u_in);
+	error0 = cudaGetLastError();
+	printf("8 free: %s\n",cudaGetErrorString(error0));
+	cudaFree(u_out);
+	error0 = cudaGetLastError();
+	printf("9 free: %s\n",cudaGetErrorString(error0));
 
 	// free grid memory
 	for (i = 0; i < N; i++) {
