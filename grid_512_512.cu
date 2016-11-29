@@ -14,10 +14,14 @@
 
 __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 
+	// get my indices
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = ((ind) / ((N))) + 1;
 	int j = ((ind) % (N)) + 1;
+
 	if(i<N && j < N){
+
+		// first step
 		if(i< N-1 && j<N-1){
 			//do work
 			float sum_of_neighbors, previous_value, previous_previous_value;
@@ -27,6 +31,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 			u_out[ind(i,j)] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 		}
 		__syncthreads();
+		// second step
 		if(i< N-1){
 			//do work
 			float value,to_use;
@@ -51,17 +56,25 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		__syncthreads();
 	}
 	i = i -1;
-	j = j -1;
-	if(i< N && j == 0){
+	if(i< N && j == 1){
 		// update corners
+		float value,to_use;
 		if(i == 0){
-			u_out[ind(0,0)] = BOUNDARY_GAIN * u_out[ind(1,0)];
+			to_use = u_out[ind(1,i)];
+			value =  BOUNDARY_GAIN * to_use;
+			u_out[ind(0,0)] = value;
 		}else if(i == 1){
-			u_out[ind(N-1,0)] = BOUNDARY_GAIN * u_out[ind(N-2,0)];
+			to_use = u_out[ind(N-2,0)]
+			value =  BOUNDARY_GAIN * to_use;
+			u_out[ind(N-1,0)] = value;
 		}else if(i == 2){
-			u_out[ind(0,N-1)] = BOUNDARY_GAIN * u_out[ind(0,N-2)];
+			to_use = u_out[ind(0,N-2)]
+			value =  BOUNDARY_GAIN * to_use;
+			u_out[ind(0,N-1)] = to_use;
 		}else if(i == 3){
-			u_out[ind(N-1,N-1)] = BOUNDARY_GAIN * u_out[ind(N-1,N-2)];
+			to_use = u_out[ind(N-1,N-2)]
+			value =  BOUNDARY_GAIN * to_use;
+			u_out[ind(N-1,N-1)] = value;
 		}
 	}
 }
