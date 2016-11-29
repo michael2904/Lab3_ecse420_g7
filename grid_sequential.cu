@@ -1,6 +1,7 @@
 // Code adapted from MATLAB implementation at https://people.ece.cornell.edu/land/courses/ece5760/LABS/s2016/lab3.html
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #define N 512 // grid side length
 #define RHO 0.5 // related to pitch
 #define ETA 2e-4 // related to duration of sound
@@ -20,6 +21,7 @@ void print_grid(float **grid) {
 int main(int argc, char** argv) {
 	// get number of iterations to perform
 	int T = atoi(argv[1]);
+	struct timeval start_time, end_time;
 
 	// initialize grid
 	float **u = (float **) malloc(N * sizeof(float *));
@@ -37,6 +39,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	printf("Size of grid: %d nodes\n", N*N);
+	gettimeofday(&start_time, NULL);
 
 	// simulate drum strike
 	u1[N/2][N/2] = 1;
@@ -96,6 +99,11 @@ int main(int argc, char** argv) {
 
 		// record displacement at node (N-1,N-1)
 	}
+	gettimeofday(&end_time, NULL);
+
+	unsigned long long time_elapsed = 1000 * (end_time.tv_sec - start_time.tv_sec) + (end_time.tv_usec - start_time.tv_usec) / 1000;
+
+	printf("Time Elapsed [%llu ms]\n", time_elapsed);
 
 	// free grid memory
 	for (i = 0; i < N; i++) {
