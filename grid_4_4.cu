@@ -18,6 +18,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 	int i = ((ind) / ((N)))+1;
 	int j = ((ind) % (N))+1;
 	if(i<N && j < N){
+		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 		if(i< N-1 && j<N-1){
 			//do work
 			float sum_of_neighbors, previous_value, previous_previous_value;
@@ -70,11 +71,6 @@ int process(int T){
 		u[i] = 0;
 		u1[i] = 0;
 		u2[i] = 0;
-	}
-	for (i = 0; i < 5; i++) {
-		for (j = 0; j < 5; j++) {
-			printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
-		}
 	}
 	printf("Size of grid: %d nodes\n", N*N);
 	// simulate drum strike

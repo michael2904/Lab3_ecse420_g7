@@ -67,11 +67,6 @@ int process(int T){
 		u1[i] = 0;
 		u2[i] = 0;
 	}
-	for (i = 0; i < 5; i++) {
-		for (j = 0; j < 5; j++) {
-			printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
-		}
-	}
 	printf("Size of grid: %d nodes\n", N*N);
 	// simulate drum strike
 	u1[ind(N/2,N/2)] = 1;
