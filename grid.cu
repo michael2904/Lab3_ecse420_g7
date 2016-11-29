@@ -21,11 +21,11 @@ __global__ void grid_N_First_Step(float * u_out, float * u1_in,float * u2_in){
 	if(i< 10 && j<10)printf("Try 2 (%d,%d) printing %f %f\n",i,j,u1_in[ind(i,j)],u2_in[ind(i,j)]);
 	if(i< N-1 && j<N-1){
 		//do work
-		// float sum_of_neighbors, previous_value, previous_previous_value;
-		// sum_of_neighbors = u1_in[i-1][j] + u1_in[i+1][j] + u1_in[i][j-1] + u1_in[i][j+1];
-		// previous_value = u1_in[i][j];
-		// previous_previous_value = u2_in[i][j];
-		// u_out[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
+		float sum_of_neighbors, previous_value, previous_previous_value;
+		sum_of_neighbors = u1_in[i-1][j] + u1_in[i+1][j] + u1_in[i][j-1] + u1_in[i][j+1];
+		previous_value = u1_in[i][j];
+		previous_previous_value = u2_in[i][j];
+		u_out[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 	}
 }
 
@@ -85,8 +85,8 @@ int process(int T){
 	for (t = 0; t < T; t++) {
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
 		printf("Try printing %f %f %f\n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)]);
-		for (i = 0; i < 5; i++) {
-			for (j = 0; j < 5; j++) {
+		for (i = (N/2)-3; i < (N/2)+3; i++) {
+			for (j = (N/2)-3; j < (N/2)+3; j++) {
 				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
 			}
 		}
@@ -117,20 +117,8 @@ int process(int T){
 		error0 = cudaGetLastError();
 		printf("1st launch: %s\n",cudaGetErrorString(error0));
 
-		for (i = 0; i < 5; i++) {
-			for (j = 0; j < 5; j++) {
-				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
-			}
-		}
-
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
-
-		for (i = 0; i < 5; i++) {
-			for (j = 0; j < 5; j++) {
-				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
-			}
-		}
 
 		error0 = cudaGetLastError();
 		printf("2n copy: %s\n",cudaGetErrorString(error0));
@@ -149,38 +137,6 @@ int process(int T){
 				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
 			}
 		}
-
-		// // second step
-
-		// // allocate GPU memory
-		// cudaMalloc(&u_in, size);
-		// error0 = cudaGetLastError();
-		// printf("3rd malloc: %s\n",cudaGetErrorString(error0));
-
-		// // transfer the array to the GPU
-		// cudaMemcpy(u_in, u, size, cudaMemcpyHostToDevice);
-		// error0 = cudaGetLastError();
-		// printf("5 malloc: %s\n",cudaGetErrorString(error0));
-
-		// // // launch the kernel
-		// // dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
-		// // dim3 dimBlock(BLOCK_WIDTH);
-
-		// grid_N_Second_Step<<<dimGrid, dimBlock>>>(u_out, u_in);
-		// error0 = cudaGetLastError();
-		// printf("6 running: %s\n",cudaGetErrorString(error0));
-		// // copy back the result array to the CPU
-		// cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
-		// error0 = cudaGetLastError();
-		// printf("7 copy: %s\n",cudaGetErrorString(error0));
-
-		// cudaError_t error3 = cudaGetLastError();
-		// printf("kernel 2 launch failed: %s\n",cudaGetErrorString(error3));
-
-		// cudaThreadSynchronize();
-		// cudaError_t error4 = cudaGetLastError();
-		// printf("kernel 2 execution failed: %s\n",cudaGetErrorString(error4));
-		// printf("Try 162 printing %f %f %f %f \n",u[ind(N/2,N/2)],u[ind(N/2,N/2)],u[ind(N/2,N/2)],u1[ind(N/2,N/2)]);
 
 		printf(" Try 99 printing %f\n",u[ind(N/2,N/2)]);
 		// update corners
@@ -205,7 +161,7 @@ int process(int T){
 		printf("%f,\n", audio[t]);
 		printf("Try 15 printing %f\n",u[N*N/2]);
 		temp = u2;
-		printf("Try 161 printing %f %f %f %f \n",u2[ind(N/2,N/2)],u2[ind(N/2,N/2)],u2[ind(N/2,N/2)],temp[ind(N/2,N/2)]);
+		printf("Try 161 printing %f %f %f %f \n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)],temp[ind(N/2,N/2)]);
 		u2 = u1;
 		printf("Try 162 printing %f %f %f %f \n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)],temp[ind(N/2,N/2)]);
 		u1 = u;
