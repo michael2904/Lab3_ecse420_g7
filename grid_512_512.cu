@@ -1,6 +1,7 @@
 /* Example of using lodepng to load, process, save image */
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #define N 512 // grid side length
 #define RHO 0.5 // related to pitch
 #define ETA 2e-4 // related to duration of sound
@@ -86,6 +87,7 @@ int process(int T){
 	float *u = (float *) malloc(N * N * sizeof(float *));
 	float *u1 = (float *) malloc(N * N * sizeof(float *));
 	float *u2 = (float *) malloc(N * N * sizeof(float *));
+	struct timeval start_time, end_time;
 	int i;
 	for (i = 0; i < N*N; i++) {
 		u[i] = 0;
@@ -103,6 +105,8 @@ int process(int T){
 	float * u2_in;
 	float * u_out;
 	float * temp;
+
+	gettimeofday(&start_time, NULL);
 
 	// allocate GPU memory
 	cudaMalloc(&u1_in, size);
@@ -168,6 +172,10 @@ int process(int T){
 	cudaFree(u2_in);
 	cudaFree(u1_in);
 	cudaFree(u_out);
+
+	unsigned long long time_elapsed = 1000 * (end_time.tv_sec - start_time.tv_sec) + (end_time.tv_usec - start_time.tv_usec) / 1000;
+
+	printf("Time Elapsed [%llu ms]\n", time_elapsed);
 
 	free(u);
 	free(u1);
