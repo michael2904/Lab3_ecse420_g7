@@ -15,10 +15,11 @@
 __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	int i = ((ind) / ((N)))+1;
-	int j = ((ind) % (N))+1;
+	int i = ((ind) / ((N))) + 1;
+	int j = ((ind) % (N)) + 1;
 	if(i<N && j < N){
 		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
+		__syncthreads();
 		if(i< N-1 && j<N-1){
 			//do work
 			float sum_of_neighbors, previous_value, previous_previous_value;
@@ -27,6 +28,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 			previous_previous_value = u2_in[ind(i,j)];
 			u_out[ind(i,j)] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 		}
+		__syncthreads();
 		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 		__syncthreads();
 		if(i< N-1 && j == 0){
@@ -41,6 +43,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 				u_out[ind(i,N-1)] = BOUNDARY_GAIN * u_out[ind(i,N-2)]; // right
 			}
 		}
+		__syncthreads();
 		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 		__syncthreads();
 		if(j == 0){
@@ -55,8 +58,17 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 				u_out[ind(N-1,N-1)] = BOUNDARY_GAIN * u_out[ind(N-1,N-2)];
 			}
 		}
+		__syncthreads();
 		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 	}
+	i = i -1;
+	j = j -1;
+	__syncthreads();
+	if(i<N && j < N){
+		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
+	}
+	__syncthreads();
+
 }
 
 
