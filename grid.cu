@@ -30,26 +30,26 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 	if(i< N-1 && j == 0){
 		//do work
 		if(j == 0){
-			u_out[ind(0,i)] = BOUNDARY_GAIN * u_in[ind(1,i)]; // top
+			u_out[ind(0,i)] = BOUNDARY_GAIN * u_out[ind(1,i)]; // top
 		}else if(j == 1){
-			u_out[ind(N-1,i)] = BOUNDARY_GAIN * u_in[ind(N-2,i)]; // bottom
+			u_out[ind(N-1,i)] = BOUNDARY_GAIN * u_out[ind(N-2,i)]; // bottom
 		}else if(j == 2){
-			u_out[ind(i,0)] = BOUNDARY_GAIN * u_in[ind(i,1)]; // left
+			u_out[ind(i,0)] = BOUNDARY_GAIN * u_out[ind(i,1)]; // left
 		}else if(j == 3){
-			u_out[ind(i,N-1)] = BOUNDARY_GAIN * u_in[ind(i,N-2)]; // right
+			u_out[ind(i,N-1)] = BOUNDARY_GAIN * u_out[ind(i,N-2)]; // right
 		}
 	}
 	__syncthreads();
 	if(j == 0){
 		// update corners
 		if(i == 0){
-			u[ind(0,0)] = BOUNDARY_GAIN * u[ind(1,0)];
+			u_out[ind(0,0)] = BOUNDARY_GAIN * u_out[ind(1,0)];
 		}else if(i == 1){
-			u[ind(N-1,0)] = BOUNDARY_GAIN * u[ind(N-2,0)];
+			u_out[ind(N-1,0)] = BOUNDARY_GAIN * u_out[ind(N-2,0)];
 		}else if(i == 2){
-			u[ind(0,N-1)] = BOUNDARY_GAIN * u[ind(0,N-2)];
+			u_out[ind(0,N-1)] = BOUNDARY_GAIN * u_out[ind(0,N-2)];
 		}else if(i == 3){
-			u[ind(N-1,N-1)] = BOUNDARY_GAIN * u[ind(N-1,N-2)];
+			u_out[ind(N-1,N-1)] = BOUNDARY_GAIN * u_out[ind(N-1,N-2)];
 		}
 	}
 }
