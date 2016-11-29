@@ -54,11 +54,11 @@ int process(int T){
 	float *u = (float *) malloc(N * N * sizeof(float *));
 	float *u1 = (float *) malloc(N * N * sizeof(float *));
 	float *u2 = (float *) malloc(N * N * sizeof(float *));
-	int i;
+	int i,j;
 	for (i = 0; i < N*N; i++) {
-		u[ind(i,j)] = 0;
-		u1[ind(i,j)] = 0;
-		u2[ind(i,j)] = 0;
+		u[i] = 0;
+		u1[i] = 0;
+		u2[i] = 0;
 	}
 	u[ind(2,2)] = 4;
 	u1[ind(1,1)] = 2;
@@ -217,7 +217,6 @@ int process(int T){
 
 	cudaFree(u2_in);
 	cudaFree(u1_in);
-	cudaFree(u_in);
 	cudaError_t error5 = cudaGetLastError();
 	printf("8 free: %s\n",cudaGetErrorString(error5));
 	cudaFree(u_out);
