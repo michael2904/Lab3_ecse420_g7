@@ -27,7 +27,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		u_out[ind(i,j)] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 	}
 	__syncthreads();
-	if(i< N-1 && j == 0){
+	if(i< N-1 && j == 1){
 		//do work
 		if(j == 0){
 			u_out[ind(0,i)] = BOUNDARY_GAIN * u_out[ind(1,i)]; // top
@@ -40,6 +40,8 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		}
 	}
 	__syncthreads();
+	i = i -1;
+	j = j -1;
 	if(j == 0){
 		// update corners
 		if(i == 0){

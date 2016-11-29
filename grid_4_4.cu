@@ -31,7 +31,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		__syncthreads();
 		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 		__syncthreads();
-		if(i< N-1 && j == 0){
+		if(i< N-1 && j == 1){
 			//do work
 			int value;
 			if(j == 0){
@@ -55,6 +55,8 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		__syncthreads();
 		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 		__syncthreads();
+		i = i -1;
+		j = j -1;
 		if(j == 0){
 			// update corners
 			if(i == 0){
