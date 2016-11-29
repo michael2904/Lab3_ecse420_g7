@@ -116,24 +116,24 @@ int process(int T){
 	int t;
 	for (t = 0; t < T; t++) {
 		// printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
-		// printf("Try printing %.6f %.6f %.6f\n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)]);
+		// printf("Try printing %f %f %f\n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)]);
 		// for (i = (N/2)-5; i < (N/2)+5; i++) {
 		// 	for (j = (N/2)-5; j < (N/2)+5; j++) {
-		// 		printf("u(%d,%d) %.6f |",i,j,u[ind(i,j)]);
+		// 		printf("u(%d,%d) %f |",i,j,u[ind(i,j)]);
 		// 	}
 		// 	printf("\n");
 		// }
 		// printf("\n");
 		// for (i = (N/2)-5; i < (N/2)+5; i++) {
 		// 	for (j = (N/2)-5; j < (N/2)+5; j++) {
-		// 		printf("u1(%d,%d) %.6f |",i,j,u1[ind(i,j)]);
+		// 		printf("u1(%d,%d) %f |",i,j,u1[ind(i,j)]);
 		// 	}
 		// 	printf("\n");
 		// }
 		// printf("\n");
 		// for (i = (N/2)-5; i < (N/2)+5; i++) {
 		// 	for (j = (N/2)-5; j < (N/2)+5; j++) {
-		// 		printf("u2(%d,%d) %.6f |",i,j,u2[ind(i,j)]);
+		// 		printf("u2(%d,%d) %f |",i,j,u2[ind(i,j)]);
 		// 	}
 		// 	printf("\n");
 		// }
@@ -162,7 +162,7 @@ int process(int T){
 		// print_grid(u);
 
 		audio[t] = u[ind(N/2,N/2)];
-		printf("%.6f,\n", audio[t]);
+		printf("%f,\n", audio[t]);
 		temp = u2;
 		u2 = u1;
 		u1 = u;
