@@ -8,7 +8,7 @@ CFLAGS  = -I. -lm
 #
 default: all
 
-all: test_equality rectify rectify_sequential pool pool_sequential convolve  convolve_sequential grid grid_sequential
+all: test_equality rectify rectify_sequential pool pool_sequential convolve  convolve_sequential grid_512_512 grid_4_4 grid_sequential
 
 nogrid: test_equality rectify rectify_sequential pool pool_sequential convolve convolve_sequential
 
@@ -60,11 +60,17 @@ test_equality.o: test_equality.cu
 lodepng.o: lodepng.cu
 	$(CC)  -c lodepng.cu
 
-grid:  grid.o
-	$(CC) -o grid grid.o $(CFLAGS)
+grid_512_512:  grid_512_512.o
+	$(CC) -o grid_512_512 grid_512_512.o $(CFLAGS)
 
-grid.o: grid.cu
-	$(CC) -c grid.cu
+grid_512_512.o: grid_512_512.cu
+	$(CC) -c grid_512_512.cu
+
+grid_4_4:  grid_4_4.o
+	$(CC) -o grid_4_4 grid_4_4.o $(CFLAGS)
+
+grid_4_4.o: grid_4_4.cu
+	$(CC) -c grid_4_4.cu
 
 grid_sequential:  grid_sequential.o
 	$(CC) -o grid_sequential grid_sequential.o $(CFLAGS)
