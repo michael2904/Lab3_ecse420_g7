@@ -12,7 +12,7 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void grid_N_First_Step(float * u_out, float * u1_in,float * u2_in){
+__global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
 	int i = ((ind) / ((N)))+1;
@@ -26,26 +26,34 @@ __global__ void grid_N_First_Step(float * u_out, float * u1_in,float * u2_in){
 		previous_previous_value = u2_in[ind(i,j)];
 		u_out[ind(i,j)] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 	}
+	__syncthreads();
+	if(i< N-1 && j == 0){
+		//do work
+		if(j == 0){
+			u_out[ind(0,i)] = BOUNDARY_GAIN * u_in[ind(1,i)]; // top
+		}else if(j == 1){
+			u_out[ind(N-1,i)] = BOUNDARY_GAIN * u_in[ind(N-2,i)]; // bottom
+		}else if(j == 2){
+			u_out[ind(i,0)] = BOUNDARY_GAIN * u_in[ind(i,1)]; // left
+		}else if(j == 3){
+			u_out[ind(i,N-1)] = BOUNDARY_GAIN * u_in[ind(i,N-2)]; // right
+		}
+	}
+	__syncthreads();
+	if(j == 0){
+		// update corners
+		if(i == 0){
+			u[ind(0,0)] = BOUNDARY_GAIN * u[ind(1,0)];
+		}else if(i == 1){
+			u[ind(N-1,0)] = BOUNDARY_GAIN * u[ind(N-2,0)];
+		}else if(i == 2){
+			u[ind(0,N-1)] = BOUNDARY_GAIN * u[ind(0,N-2)];
+		}else if(i == 3){
+			u[ind(N-1,N-1)] = BOUNDARY_GAIN * u[ind(N-1,N-2)];
+		}
+	}
 }
 
-// __global__ void grid_N_Second_Step(float * u_out, float * u_in){
-
-// 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-// 	int i = ((ind) / ((N)))+1;
-// 	int j = ((ind) % (N))+1;
-// 	if(i< N-1 && j == 0){
-// 		//do work
-// 		if(j == 0){
-// 			u_out[0][i] = BOUNDARY_GAIN * u_in[1][i]; // top
-// 		}else if(j == 1){
-// 			u_out[N-1][i] = BOUNDARY_GAIN * u_in[N-2][i]; // bottom
-// 		}else if(j == 2){
-// 			u_out[i][0] = BOUNDARY_GAIN * u_in[i][1]; // left
-// 		}else if(j == 3){
-// 			u_out[i][N-1] = BOUNDARY_GAIN * u_in[i][N-2]; // right
-// 		}
-// 	}
-// }
 
 
 int process(int T){
@@ -118,22 +126,17 @@ int process(int T){
 		dim3 dimGrid(((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 		dim3 dimBlock(BLOCK_WIDTH);
 
-		grid_N_First_Step<<<dimGrid, dimBlock>>>(u_out,u1_in,u2_in);
+		grid_N<<<dimGrid, dimBlock>>>(u_out,u1_in,u2_in);
 
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
 
 		cudaError_t error1 = cudaGetLastError();
-		printf("kernel 1 launch failed: %s\n",cudaGetErrorString(error1));
+		if (error1 != cudaSuccess)printf("kernel 1 launch failed: %s\n",cudaGetErrorString(error1));
 		cudaThreadSynchronize();
 		cudaError_t error2 = cudaGetLastError();
-		printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error2));
+		if (error2 != cudaSuccess)printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error2));
 
-		// update corners
-		u[ind(0,0)] = BOUNDARY_GAIN * u[ind(1,0)];
-		u[ind(N-1,0)] = BOUNDARY_GAIN * u[ind(N-2,0)];
-		u[ind(0,N-1)] = BOUNDARY_GAIN * u[ind(0,N-2)];
-		u[ind(N-1,N-1)] = BOUNDARY_GAIN * u[ind(N-1,N-2)];
 
 		// print_grid(u);
 
