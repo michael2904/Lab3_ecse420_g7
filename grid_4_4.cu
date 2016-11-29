@@ -57,15 +57,15 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 			value =  BOUNDARY_GAIN * to_use;
 			u_out[ind(0,0)] = value;
 		}else if(i == 1){
-			to_use = u_out[ind(N-2,0)]
+			to_use = u_out[ind(N-2,0)];
 			value =  BOUNDARY_GAIN * to_use;
 			u_out[ind(N-1,0)] = value;
 		}else if(i == 2){
-			to_use = u_out[ind(0,N-2)]
+			to_use = u_out[ind(0,N-2)];
 			value =  BOUNDARY_GAIN * to_use;
 			u_out[ind(0,N-1)] = to_use;
 		}else if(i == 3){
-			to_use = u_out[ind(N-1,N-2)]
+			to_use = u_out[ind(N-1,N-2)];
 			value =  BOUNDARY_GAIN * to_use;
 			u_out[ind(N-1,N-1)] = value;
 		}
