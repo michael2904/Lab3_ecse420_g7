@@ -22,10 +22,10 @@ __global__ void grid_N_First_Step(float * u_out, float * u1_in,float * u2_in){
 	if(i< N-1 && j<N-1){
 		//do work
 		float sum_of_neighbors, previous_value, previous_previous_value;
-		sum_of_neighbors = u1_in[i-1][j] + u1_in[i+1][j] + u1_in[i][j-1] + u1_in[i][j+1];
-		previous_value = u1_in[i][j];
-		previous_previous_value = u2_in[i][j];
-		u_out[i][j] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
+		sum_of_neighbors = u1_in[ind(i-1,j)] + u1_in[ind(i+1,j)] + u1_in[ind(i,j-1)] + u1_in[ind(i,j+1)];
+		previous_value = u1_in[ind(i,j)];
+		previous_previous_value = u2_in[ind(i,j)];
+		u_out[ind(i,j)] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 	}
 }
 
