@@ -13,7 +13,7 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void grid_N(double * u_out, double * u1_in,double * u2_in){
+__global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 
 	// get my indices
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
@@ -25,7 +25,7 @@ __global__ void grid_N(double * u_out, double * u1_in,double * u2_in){
 		// first step
 		if(i< N-1 && j<N-1){
 			//do work
-			double sum_of_neighbors, previous_value, previous_previous_value;
+			float sum_of_neighbors, previous_value, previous_previous_value;
 			sum_of_neighbors = u1_in[ind(i-1,j)] + u1_in[ind(i+1,j)] + u1_in[ind(i,j-1)] + u1_in[ind(i,j+1)];
 			previous_value = u1_in[ind(i,j)];
 			previous_previous_value = u2_in[ind(i,j)];
@@ -35,7 +35,7 @@ __global__ void grid_N(double * u_out, double * u1_in,double * u2_in){
 		// second step
 		if(i< N-1){
 			//do work
-			double value,to_use;
+			float value,to_use;
 			if(j == 1){
 				to_use = u_out[ind(1,i)];
 				value =  BOUNDARY_GAIN * to_use; // top
@@ -59,7 +59,7 @@ __global__ void grid_N(double * u_out, double * u1_in,double * u2_in){
 	i = i -1;
 	if(i< N && j == 1){
 		// update corners
-		double value,to_use;
+		float value,to_use;
 		if(i == 0){
 			to_use = u_out[ind(1,i)];
 			value =  BOUNDARY_GAIN * to_use;
@@ -84,9 +84,9 @@ __global__ void grid_N(double * u_out, double * u1_in,double * u2_in){
 
 int process(int T){
 	// initialize grid
-	double *u = (double *) malloc(N * N * sizeof(double *));
-	double *u1 = (double *) malloc(N * N * sizeof(double *));
-	double *u2 = (double *) malloc(N * N * sizeof(double *));
+	float *u = (float *) malloc(N * N * sizeof(float *));
+	float *u1 = (float *) malloc(N * N * sizeof(float *));
+	float *u2 = (float *) malloc(N * N * sizeof(float *));
 	struct timeval start_time, end_time;
 	int i;
 	for (i = 0; i < N*N; i++) {
@@ -97,14 +97,14 @@ int process(int T){
 	printf("Size of grid: %d nodes\n", N*N);
 	// simulate drum strike
 	u1[ind(N/2,N/2)] = 1;
-	double *audio = (double *) malloc(T * sizeof(double));
-	const int size = N * N * sizeof(double);
+	float *audio = (float *) malloc(T * sizeof(float));
+	const int size = N * N * sizeof(float);
 
 	// declare GPU memory pointers
-	double * u1_in;
-	double * u2_in;
-	double * u_out;
-	double * temp;
+	float * u1_in;
+	float * u2_in;
+	float * u_out;
+	float * temp;
 
 	gettimeofday(&start_time, NULL);
 
