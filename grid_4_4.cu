@@ -34,7 +34,9 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		if(i< N-1 && j == 0){
 			//do work
 			if(j == 0){
+				printf("--- %d u(%d,%d) %f  = %f\n",ind,i,j,u_out[ind(0,i)],BOUNDARY_GAIN * u_out[ind(1,i)]);
 				u_out[ind(0,i)] = BOUNDARY_GAIN * u_out[ind(1,i)]; // top
+				printf("--- %d u(%d,%d) %f \n",ind,i,j,u_out[ind(0,i)]);
 			}else if(j == 1){
 				u_out[ind(N-1,i)] = BOUNDARY_GAIN * u_out[ind(N-2,i)]; // bottom
 			}else if(j == 2){
