@@ -15,34 +15,44 @@
 __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
-	int i = ((ind) / ((N)))+1;
-	int j = ((ind) % (N))+1;
-	//if(i == N/2 && j == N/2)printf("Try (%d,%d) printing %f %f\n",i,j,u1_in[ind(N/2,N/2)],u2_in[ind(N/2,N/2)]);
-	if(i< N-1 && j<N-1){
-		//do work
-		float sum_of_neighbors, previous_value, previous_previous_value;
-		sum_of_neighbors = u1_in[ind(i-1,j)] + u1_in[ind(i+1,j)] + u1_in[ind(i,j-1)] + u1_in[ind(i,j+1)];
-		previous_value = u1_in[ind(i,j)];
-		previous_previous_value = u2_in[ind(i,j)];
-		u_out[ind(i,j)] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
-	}
-	__syncthreads();
-	if(i< N-1 && j == 1){
-		//do work
-		if(j == 0){
-			u_out[ind(0,i)] = BOUNDARY_GAIN * u_out[ind(1,i)]; // top
-		}else if(j == 1){
-			u_out[ind(N-1,i)] = BOUNDARY_GAIN * u_out[ind(N-2,i)]; // bottom
-		}else if(j == 2){
-			u_out[ind(i,0)] = BOUNDARY_GAIN * u_out[ind(i,1)]; // left
-		}else if(j == 3){
-			u_out[ind(i,N-1)] = BOUNDARY_GAIN * u_out[ind(i,N-2)]; // right
+	int i = ((ind) / ((N))) + 1;
+	int j = ((ind) % (N)) + 1;
+	if(i<N && j < N){
+		if(i< N-1 && j<N-1){
+			//do work
+			float sum_of_neighbors, previous_value, previous_previous_value;
+			sum_of_neighbors = u1_in[ind(i-1,j)] + u1_in[ind(i+1,j)] + u1_in[ind(i,j-1)] + u1_in[ind(i,j+1)];
+			previous_value = u1_in[ind(i,j)];
+			previous_previous_value = u2_in[ind(i,j)];
+			u_out[ind(i,j)] = (RHO * (sum_of_neighbors -4*previous_value) + 2*previous_value -(1-ETA)*previous_previous_value)/(1+ETA);
 		}
+		__syncthreads();
+		if(i< N-1){
+			//do work
+			float value,to_use;
+			if(j == 1){
+				to_use = u_out[ind(1,i)];
+				value =  BOUNDARY_GAIN * to_use; // top
+				u_out[ind(0,i)] = value;
+			}else if(j == 2){
+				to_use = u_out[ind(N-2,i)];
+				value = BOUNDARY_GAIN * to_use; // bottom
+				u_out[ind(N-1,i)] = value;
+			}else if(j == 3){
+				to_use = u_out[ind(i,1)];
+				value = BOUNDARY_GAIN * to_use; // left
+				u_out[ind(i,0)] = value;
+			}else if(j == 4){
+				to_use = u_out[ind(i,N-2)];
+				value = BOUNDARY_GAIN * to_use; // right
+				u_out[ind(i,N-1)] = value;
+			}
+		}
+		__syncthreads();
 	}
-	__syncthreads();
 	i = i -1;
 	j = j -1;
-	if(j == 0){
+	if(i< N && j == 0){
 		// update corners
 		if(i == 0){
 			u_out[ind(0,0)] = BOUNDARY_GAIN * u_out[ind(1,0)];
