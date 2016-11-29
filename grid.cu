@@ -77,7 +77,6 @@ int process(int T){
 	// declare GPU memory pointers
 	float * u1_in;
 	float * u2_in;
-	float * u_in;
 	float * u_out;
 	float * temp;
 
@@ -222,13 +221,6 @@ int process(int T){
 	cudaFree(u_out);
 	error5 = cudaGetLastError();
 	printf("9 free: %s\n",cudaGetErrorString(error5));
-
-	// free grid memory
-	for (i = 0; i < N; i++) {
-		free(u[i]);
-		free(u1[i]);
-		free(u2[i]);
-	}
 
 	free(u);
 	free(u1);
