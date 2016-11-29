@@ -71,9 +71,10 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		}else if(i == 3){
 			u_out[ind(N-1,N-1)] = BOUNDARY_GAIN * u_out[ind(N-1,N-2)];
 		}
+		__syncthreads();
+		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 	}
-	__syncthreads();
-	printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
+
 
 }
 
