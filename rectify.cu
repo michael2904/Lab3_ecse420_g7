@@ -2,8 +2,9 @@
 #include "lodepng.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
-#define BLOCK_WIDTH 1024
+#define BLOCK_WIDTH 512
 #define MAX_MSE 0.00001f
 
 
@@ -25,6 +26,8 @@ int process(char* input_filename, char* output_filename){
 	unsigned char *image, *new_image;
 	unsigned width, height;
 
+ 	struct timeval start_time, end_time;
+
 	//image --> h_in
 	//new_image --> h_out
 
@@ -34,9 +37,11 @@ int process(char* input_filename, char* output_filename){
 		return error;
 	}
 
+	gettimeofday(&start_time, NULL);
+
 	const int size = width * height * 4 * sizeof(unsigned char);
 	new_image = (unsigned char *)malloc(size);
-
+	
 
 	// declare GPU memory pointers
 	unsigned char * d_in;
@@ -51,9 +56,16 @@ int process(char* input_filename, char* output_filename){
 
 	printf("%d total threads in %d blocks of size %d\n",size, (size/BLOCK_WIDTH + (size % BLOCK_WIDTH > 0)), BLOCK_WIDTH);
 
+
 	// launch the kernel
 	rectify<<<(size/BLOCK_WIDTH + (size % BLOCK_WIDTH > 0)), BLOCK_WIDTH>>>(d_out, d_in);
 
+	gettimeofday(&end_time, NULL);	
+	
+	unsigned long long time_elapsed = 1000 * (end_time.tv_sec - start_time.tv_sec) + (end_time.tv_usec - start_time.tv_usec) / 1000;
+
+	printf("Total Time Elapsed = %llu ms\n", time_elapsed);
+	
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, size, cudaMemcpyDeviceToHost);
 

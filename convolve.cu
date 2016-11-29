@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "wm.h"
-
+#include <sys/time.h>
 
 #define BLOCK_WIDTH 1024
 
@@ -42,11 +42,18 @@ int process(char* input_filename, char* output_filename){
 	unsigned width, height;
 	unsigned new_width, new_height;
 
+	struct timeval start_time, end_time;
+
+
 	error = lodepng_decode32_file(&image, &width, &height, input_filename);
 	if(error){
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 		return error;
 	}
+
+
+	gettimeofday(&start_time, NULL);
+	
 	new_width = (width)-2;
 	new_height = (height)-2;
 
@@ -77,7 +84,12 @@ int process(char* input_filename, char* output_filename){
 	dim3 dimGrid((size+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 	dim3 dimBlock(BLOCK_WIDTH);
 
+
 	convolve<<<dimGrid, dimBlock>>>(d_out, d_in,width,height,(float(*) [3])w_d);
+
+
+	gettimeofday(&end_time, NULL);
+
 
 	// copy back the result array to the CPU
 	cudaMemcpy(new_image, d_out, new_size, cudaMemcpyDeviceToHost);
@@ -93,6 +105,11 @@ int process(char* input_filename, char* output_filename){
 	if (cudaGetLastError() != cudaSuccess) printf("kernel execution failed\n");
 
 	lodepng_encode32_file(output_filename, new_image, new_width, new_height);
+
+
+	  unsigned long long time_elapsed = 1000 * (end_time.tv_sec - start_time.tv_sec) + (end_time.tv_usec - start_time.tv_usec) / 1000;
+ 
+  printf("Time Elapsed [%llu ms]\n", time_elapsed);
 
 	free(image);
 	free(new_image);
