@@ -18,7 +18,6 @@ __global__ void grid_N_First_Step(float * u_out, float * u1_in,float * u2_in){
 	int i = ((ind) / ((N)))+1;
 	int j = ((ind) % (N))+1;
 	if(i == N/2 && j == N/2)printf("Try (%d,%d) printing %f %f\n",i,j,u1_in[ind(N/2,N/2)],u2_in[ind(N/2,N/2)]);
-	if(i< 10 && j<10)printf("Try 2 (%d,%d) printing %f %f\n",i,j,u1_in[ind(i,j)],u2_in[ind(i,j)]);
 	if(i< N-1 && j<N-1){
 		//do work
 		float sum_of_neighbors, previous_value, previous_previous_value;
@@ -80,103 +79,75 @@ int process(int T){
 	float * u_out;
 	float * temp;
 
+	// allocate GPU memory
+	cudaMalloc(&u1_in, size);
+	cudaMalloc(&u2_in, size);
+	cudaMalloc(&u_out, size);
 
 	int t;
 	for (t = 0; t < T; t++) {
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
 		printf("Try printing %f %f %f\n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)]);
-		for (i = (N/2)-3; i < (N/2)+3; i++) {
-			for (j = (N/2)-3; j < (N/2)+3; j++) {
-				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
+		for (i = (N/2)-2; i < (N/2)+2; i++) {
+			for (j = (N/2)-2; j < (N/2)+2; j++) {
+				printf("u(%d,%d) %f |",i,j,u[ind(i,j)]);
 			}
+			printf("\n");
 		}
-		// allocate GPU memory
-		cudaMalloc(&u1_in, size);
-		cudaError_t error0 = cudaGetLastError();
-		printf("1st malloc: %s\n",cudaGetErrorString(error0));
-		cudaMalloc(&u2_in, size);
-		error0 = cudaGetLastError();
-		printf("2nd malloc: %s\n",cudaGetErrorString(error0));
-		cudaMalloc(&u_out, size);
-		error0 = cudaGetLastError();
-		printf("3rd malloc: %s\n",cudaGetErrorString(error0));
+		printf("\n");
+		for (i = (N/2)-2; i < (N/2)+2; i++) {
+			for (j = (N/2)-2; j < (N/2)+2; j++) {
+				printf("u1(%d,%d) %f |",i,j,u1[ind(i,j)]);
+			}
+			printf("\n");
+		}
+		printf("\n");
+		for (i = (N/2)-2; i < (N/2)+2; i++) {
+			for (j = (N/2)-2; j < (N/2)+2; j++) {
+				printf("u2(%d,%d) %f |",i,j,u2[ind(i,j)]);
+			}
+			printf("\n");
+		}
+
 
 		// transfer the array to the GPU
 		cudaMemcpy(u1_in, u1, size, cudaMemcpyHostToDevice);
 		cudaMemcpy(u2_in, u2, size, cudaMemcpyHostToDevice);
-
-		error0 = cudaGetLastError();
-		printf("1st copy: %s\n",cudaGetErrorString(error0));
 
 		// launch the kernel
 		dim3 dimGrid(((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH);
 		dim3 dimBlock(BLOCK_WIDTH);
 
 		grid_N_First_Step<<<dimGrid, dimBlock>>>(u_out,u1_in,u2_in);
-		
-		error0 = cudaGetLastError();
-		printf("1st launch: %s\n",cudaGetErrorString(error0));
 
 		// copy back the result array to the CPU
 		cudaMemcpy(u, u_out, size, cudaMemcpyDeviceToHost);
 
-		error0 = cudaGetLastError();
-		printf("2n copy: %s\n",cudaGetErrorString(error0));
-
 		cudaError_t error1 = cudaGetLastError();
 		printf("kernel 1 launch failed: %s\n",cudaGetErrorString(error1));
-
-
 		cudaThreadSynchronize();
-
 		cudaError_t error2 = cudaGetLastError();
 		printf("kernel 1 execution failed: %s\n",cudaGetErrorString(error2));
 
-		for (i = 0; i < 5; i++) {
-			for (j = 0; j < 5; j++) {
-				printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
-			}
-		}
-
-		printf(" Try 99 printing %f\n",u[ind(N/2,N/2)]);
 		// update corners
 		u[ind(0,0)] = BOUNDARY_GAIN * u[ind(1,0)];
-		error0 = cudaGetLastError();
-		printf("10 copy: %s\n",cudaGetErrorString(error0));
 		u[ind(N-1,0)] = BOUNDARY_GAIN * u[ind(N-2,0)];
-		error0 = cudaGetLastError();
-		printf("11 copy: %s\n",cudaGetErrorString(error0));
 		u[ind(0,N-1)] = BOUNDARY_GAIN * u[ind(0,N-2)];
-		error0 = cudaGetLastError();
-		printf("12 copy: %s\n",cudaGetErrorString(error0));
 		u[ind(N-1,N-1)] = BOUNDARY_GAIN * u[ind(N-1,N-2)];
-		error0 = cudaGetLastError();
-		printf("13 copy: %s\n",cudaGetErrorString(error0));
 
 		// print_grid(u);
 
 		audio[t] = u[ind(N/2,N/2)];
-		error0 = cudaGetLastError();
-		printf("14 copy: %s\n",cudaGetErrorString(error0));
 		printf("%f,\n", audio[t]);
-		printf("Try 15 printing %f\n",u[N*N/2]);
 		temp = u2;
-		printf("Try 161 printing %f %f %f %f \n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)],temp[ind(N/2,N/2)]);
 		u2 = u1;
-		printf("Try 162 printing %f %f %f %f \n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)],temp[ind(N/2,N/2)]);
 		u1 = u;
-		printf("Try 163 printing %f %f %f %f \n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)],temp[ind(N/2,N/2)]);
 		u = temp;
-		printf("Try 164 printing %f %f %f %f \n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)],temp[ind(N/2,N/2)]);
 	}
 
 	cudaFree(u2_in);
 	cudaFree(u1_in);
-	cudaError_t error5 = cudaGetLastError();
-	printf("8 free: %s\n",cudaGetErrorString(error5));
 	cudaFree(u_out);
-	error5 = cudaGetLastError();
-	printf("9 free: %s\n",cudaGetErrorString(error5));
 
 	free(u);
 	free(u1);
