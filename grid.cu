@@ -67,9 +67,6 @@ int process(int T){
 		u1[i] = 0;
 		u2[i] = 0;
 	}
-	u[ind(2,2)] = 4;
-	u1[ind(1,1)] = 2;
-	u2[ind(3,3)] = 3;
 	for (i = 0; i < 5; i++) {
 		for (j = 0; j < 5; j++) {
 			printf("Try printing (%d,%d) %f %f %f\n",i,j,u[ind(i,j)],u1[ind(i,j)],u2[ind(i,j)]);
@@ -96,22 +93,22 @@ int process(int T){
 	for (t = 0; t < T; t++) {
 		printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
 		printf("Try printing %f %f %f\n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)]);
-		for (i = (N/2)-2; i < (N/2)+2; i++) {
-			for (j = (N/2)-2; j < (N/2)+2; j++) {
+		for (i = (N/2)-5; i < (N/2)+5; i++) {
+			for (j = (N/2)-5; j < (N/2)+5; j++) {
 				printf("u(%d,%d) %f |",i,j,u[ind(i,j)]);
 			}
 			printf("\n");
 		}
 		printf("\n");
-		for (i = (N/2)-2; i < (N/2)+2; i++) {
-			for (j = (N/2)-2; j < (N/2)+2; j++) {
+		for (i = (N/2)-5; i < (N/2)+5; i++) {
+			for (j = (N/2)-5; j < (N/2)+5; j++) {
 				printf("u1(%d,%d) %f |",i,j,u1[ind(i,j)]);
 			}
 			printf("\n");
 		}
 		printf("\n");
-		for (i = (N/2)-2; i < (N/2)+2; i++) {
-			for (j = (N/2)-2; j < (N/2)+2; j++) {
+		for (i = (N/2)-5; i < (N/2)+5; i++) {
+			for (j = (N/2)-5; j < (N/2)+5; j++) {
 				printf("u2(%d,%d) %f |",i,j,u2[ind(i,j)]);
 			}
 			printf("\n");
