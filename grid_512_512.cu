@@ -13,7 +13,7 @@
 
 //Putting blocks of size width divided by 0, so that each thread can access the neighboring values. There is no neighboring value that is called twice.
 
-__global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
+__global__ void grid_N(double * u_out, double * u1_in,double * u2_in){
 
 	// get my indices
 	int ind = blockIdx.x * blockDim.x + threadIdx.x;
@@ -25,7 +25,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		// first step
 		if(i< N-1 && j<N-1){
 			//do work
-			float sum_of_neighbors, previous_value, previous_previous_value;
+			double sum_of_neighbors, previous_value, previous_previous_value;
 			sum_of_neighbors = u1_in[ind(i-1,j)] + u1_in[ind(i+1,j)] + u1_in[ind(i,j-1)] + u1_in[ind(i,j+1)];
 			previous_value = u1_in[ind(i,j)];
 			previous_previous_value = u2_in[ind(i,j)];
@@ -35,7 +35,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		// second step
 		if(i< N-1){
 			//do work
-			float value,to_use;
+			double value,to_use;
 			if(j == 1){
 				to_use = u_out[ind(1,i)];
 				value =  BOUNDARY_GAIN * to_use; // top
@@ -59,7 +59,7 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 	i = i -1;
 	if(i< N && j == 1){
 		// update corners
-		float value,to_use;
+		double value,to_use;
 		if(i == 0){
 			to_use = u_out[ind(1,i)];
 			value =  BOUNDARY_GAIN * to_use;
@@ -84,9 +84,9 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 
 int process(int T){
 	// initialize grid
-	float *u = (float *) malloc(N * N * sizeof(float *));
-	float *u1 = (float *) malloc(N * N * sizeof(float *));
-	float *u2 = (float *) malloc(N * N * sizeof(float *));
+	double *u = (double *) malloc(N * N * sizeof(double *));
+	double *u1 = (double *) malloc(N * N * sizeof(double *));
+	double *u2 = (double *) malloc(N * N * sizeof(double *));
 	struct timeval start_time, end_time;
 	int i;
 	for (i = 0; i < N*N; i++) {
@@ -97,14 +97,14 @@ int process(int T){
 	printf("Size of grid: %d nodes\n", N*N);
 	// simulate drum strike
 	u1[ind(N/2,N/2)] = 1;
-	float *audio = (float *) malloc(T * sizeof(float));
-	const int size = N * N * sizeof(float);
+	double *audio = (double *) malloc(T * sizeof(double));
+	const int size = N * N * sizeof(double);
 
 	// declare GPU memory pointers
-	float * u1_in;
-	float * u2_in;
-	float * u_out;
-	float * temp;
+	double * u1_in;
+	double * u2_in;
+	double * u_out;
+	double * temp;
 
 	gettimeofday(&start_time, NULL);
 
@@ -116,24 +116,24 @@ int process(int T){
 	int t;
 	for (t = 0; t < T; t++) {
 		// printf("Run %d | %d total size with width %d and height %d in %d blocks of size %d. Size of memory %d\n",t,(N*N),N,N, ((N*N)+(BLOCK_WIDTH-1))/BLOCK_WIDTH, BLOCK_WIDTH,size);
-		// printf("Try printing %f %f %f\n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)]);
+		// printf("Try printing %.6d %.6d %.6d\n",u[ind(N/2,N/2)],u1[ind(N/2,N/2)],u2[ind(N/2,N/2)]);
 		// for (i = (N/2)-5; i < (N/2)+5; i++) {
 		// 	for (j = (N/2)-5; j < (N/2)+5; j++) {
-		// 		printf("u(%d,%d) %f |",i,j,u[ind(i,j)]);
+		// 		printf("u(%d,%d) %.6d |",i,j,u[ind(i,j)]);
 		// 	}
 		// 	printf("\n");
 		// }
 		// printf("\n");
 		// for (i = (N/2)-5; i < (N/2)+5; i++) {
 		// 	for (j = (N/2)-5; j < (N/2)+5; j++) {
-		// 		printf("u1(%d,%d) %f |",i,j,u1[ind(i,j)]);
+		// 		printf("u1(%d,%d) %.6d |",i,j,u1[ind(i,j)]);
 		// 	}
 		// 	printf("\n");
 		// }
 		// printf("\n");
 		// for (i = (N/2)-5; i < (N/2)+5; i++) {
 		// 	for (j = (N/2)-5; j < (N/2)+5; j++) {
-		// 		printf("u2(%d,%d) %f |",i,j,u2[ind(i,j)]);
+		// 		printf("u2(%d,%d) %.6d |",i,j,u2[ind(i,j)]);
 		// 	}
 		// 	printf("\n");
 		// }
@@ -162,7 +162,7 @@ int process(int T){
 		// print_grid(u);
 
 		audio[t] = u[ind(N/2,N/2)];
-		printf("%f,\n", audio[t]);
+		printf("%.6d,\n", audio[t]);
 		temp = u2;
 		u2 = u1;
 		u1 = u;
