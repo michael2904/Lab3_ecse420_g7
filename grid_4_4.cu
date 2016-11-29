@@ -34,11 +34,10 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		if(i< N-1 && j == 1){
 			//do work
 			int value;
-			if(j == 0){
+			if(j == 1){
 				value =  BOUNDARY_GAIN * u_out[ind(1,i)]; // top
 				printf("---%d u(%d,%d) %f \n",ind,i,j,value);
 				u_out[ind(0,i)] = value;
-			}else if(j == 1){
 				value = BOUNDARY_GAIN * u_out[ind(N-2,i)]; // bottom
 				printf("---%d u(%d,%d) %f \n",ind,i,j,value);
 				u_out[ind(N-1,i)] = value;
@@ -46,7 +45,6 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 				value = BOUNDARY_GAIN * u_out[ind(i,1)]; // left
 				printf("---%d u(%d,%d) %f \n",ind,i,j,value);
 				u_out[ind(i,0)] = value;
-			}else if(j == 3){
 				value = BOUNDARY_GAIN * u_out[ind(i,N-2)]; // right
 				printf("---%d u(%d,%d) %f \n",ind,i,j,value);
 				u_out[ind(i,N-1)] = value;
@@ -72,13 +70,6 @@ __global__ void grid_N(float * u_out, float * u1_in,float * u2_in){
 		__syncthreads();
 		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
 	}
-	i = i -1;
-	j = j -1;
-	__syncthreads();
-	if(i<N && j < N){
-		printf("%d u(%d,%d) %f \n",ind,i,j,u_out[ind(i,j)]);
-	}
-	__syncthreads();
 
 }
 
