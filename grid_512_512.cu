@@ -173,6 +173,8 @@ int process(int T){
 	cudaFree(u1_in);
 	cudaFree(u_out);
 
+	gettimeofday(&end_time, NULL);
+
 	unsigned long long time_elapsed = 1000 * (end_time.tv_sec - start_time.tv_sec) + (end_time.tv_usec - start_time.tv_usec) / 1000;
 
 	printf("Time Elapsed [%llu ms]\n", time_elapsed);
